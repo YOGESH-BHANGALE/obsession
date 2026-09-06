@@ -88,7 +88,7 @@ export default function CaseView({ user }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '100%', overflow: 'hidden' }}>
       {/* Top Case Bar */}
       <header
         style={{

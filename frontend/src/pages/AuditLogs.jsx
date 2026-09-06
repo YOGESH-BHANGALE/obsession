@@ -42,7 +42,7 @@ export default function AuditLogs({ user }) {
   });
 
   return (
-    <div className="audit-logs-page animate-fade-in" style={{ padding: '20px 16px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="audit-logs-page animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '2px solid var(--black)', paddingBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', textTransform: 'uppercase' }}>

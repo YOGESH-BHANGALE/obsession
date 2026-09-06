@@ -117,7 +117,7 @@ export default function Dashboard({ user }) {
   };
 
   return (
-    <div className="dashboard-container animate-fade-in" style={{ padding: '20px 16px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="dashboard-container animate-fade-in">
       {/* Top Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '2px solid var(--black)', paddingBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
         <div>

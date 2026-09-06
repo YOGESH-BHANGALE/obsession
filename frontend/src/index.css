@@ -137,21 +137,21 @@ input, select, textarea {
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: #CBD5E1;
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--black-light);
+  background: #94A3B8;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -319,8 +319,21 @@ input, select, textarea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-width: 0;
+  height: 100%;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dashboard-container,
+.audit-logs-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+  min-height: 100%;
 }
 
 .page-header {
@@ -1329,7 +1342,9 @@ input, select, textarea {
   .main-content {
     flex: 1;
     height: calc(100vh - 56px);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .page-header {
