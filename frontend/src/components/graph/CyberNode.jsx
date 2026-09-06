@@ -37,8 +37,7 @@ function CyberNode({ data, selected }) {
       <div
         style={{
           width: '180px',
-          background: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(8px)',
+          background: '#0F172A',
           borderRadius: '8px',
           border: selected ? '2px solid #38BDF8' : `1.5px dashed ${catConfig.border}`,
           boxShadow: selected ? `0 0 16px ${catConfig.color}60` : '0 4px 12px rgba(0,0,0,0.5)',
@@ -46,6 +45,7 @@ function CyberNode({ data, selected }) {
           color: '#F8FAFC',
           fontFamily: "'Inter', system-ui, sans-serif",
           cursor: 'pointer',
+          willChange: 'transform',
         }}
       >
         <Handle
@@ -152,8 +152,7 @@ function CyberNode({ data, selected }) {
     <div
       style={{
         width: isSeed ? '260px' : '248px',
-        background: 'rgba(15, 23, 42, 0.96)',
-        backdropFilter: 'blur(12px)',
+        background: '#0F172A',
         borderRadius: '10px',
         border: selected
           ? '2.5px solid #38BDF8'
@@ -171,8 +170,9 @@ function CyberNode({ data, selected }) {
         color: '#F8FAFC',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
         position: 'relative',
-        transition: 'all 0.15s ease-in-out',
+        transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         cursor: 'pointer',
+        willChange: 'transform',
       }}
     >
       {/* React Flow Input Handle */}

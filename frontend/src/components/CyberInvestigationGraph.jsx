@@ -12,7 +12,7 @@
  * - Quick search & focus, evidence filters, and directional layout toggle
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   ReactFlow,
   Background,
@@ -57,16 +57,24 @@ export default function CyberInvestigationGraph({
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const reactFlowRef = useRef(null);
+  const isInitialLayoutRef = useRef(true);
 
-  // Sync selectedNodeId prop if changed from outside
+  // Sync selectedNodeId prop without re-running expensive ELK layout
   useEffect(() => {
     if (selectedNodeId) {
       setActiveExpandedSuspect(selectedNodeId);
+      setNodes((nds) =>
+        nds.map((n) => ({
+          ...n,
+          selected: n.id === selectedNodeId,
+        }))
+      );
     }
-  }, [selectedNodeId]);
+  }, [selectedNodeId, setNodes]);
 
   // Compute ELK Layout
-  const runLayout = useCallback(async () => {
+  const runLayout = useCallback(async (shouldFit = false) => {
     if (!graphData || !graphData.nodes || graphData.nodes.length === 0) return;
     setIsComputingLayout(true);
 
@@ -110,11 +118,12 @@ export default function CyberInvestigationGraph({
       setNodes(finalNodes);
       setEdges(layoutedEdges);
 
-      // Smooth auto-fit
-      if (reactFlowInstance) {
+      // Auto-fit view only on initial load or explicit layout change
+      if (shouldFit || isInitialLayoutRef.current) {
+        isInitialLayoutRef.current = false;
         setTimeout(() => {
-          reactFlowInstance.fitView({ padding: 0.18, duration: 400 });
-        }, 60);
+          reactFlowRef.current?.fitView({ padding: 0.18, duration: 250 });
+        }, 50);
       }
     } catch (err) {
       console.error('Error running ELK layout:', err);
@@ -129,14 +138,14 @@ export default function CyberInvestigationGraph({
     edgeFilter,
     layoutDirection,
     edgeRouting,
-    reactFlowInstance,
-    selectedNodeId,
+    setNodes,
+    setEdges,
   ]);
 
-  // Re-run layout when dependencies change
+  // Re-run layout when structural dependencies change (trigger fitView on structure changes)
   useEffect(() => {
-    runLayout();
-  }, [runLayout]);
+    runLayout(true);
+  }, [graphData, viewMode, activeExpandedSuspect, edgeFilter, layoutDirection, edgeRouting]);
 
   // Handle Node Click
   const handleNodeClick = useCallback(
@@ -204,6 +213,23 @@ export default function CyberInvestigationGraph({
         onSelectNode(matchedNode.id);
       }
     }
+  };
+
+  // Instant hardware-accelerated zoom controls
+  const handleZoomIn = () => {
+    reactFlowRef.current?.zoomIn({ duration: 150 });
+  };
+
+  const handleZoomOut = () => {
+    reactFlowRef.current?.zoomOut({ duration: 150 });
+  };
+
+  const handleResetZoom = () => {
+    reactFlowRef.current?.zoomTo(1.0, { duration: 150 });
+  };
+
+  const handleFitView = () => {
+    reactFlowRef.current?.fitView({ padding: 0.18, duration: 250 });
   };
 
   return (
@@ -463,9 +489,72 @@ export default function CyberInvestigationGraph({
             <strong style={{ color: '#F8FAFC' }}>{edges.length}</strong>
           </div>
 
+          {/* Instant Zoom Controls */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: '#1E293B',
+              borderRadius: '6px',
+              padding: '2px',
+              border: '1px solid #334155',
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleZoomIn}
+              style={{
+                padding: '4px 8px',
+                fontSize: '12px',
+                fontWeight: 800,
+                background: 'transparent',
+                color: '#F8FAFC',
+                border: 'none',
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+              title="Zoom In (+25%)"
+            >
+              ➕
+            </button>
+            <button
+              type="button"
+              onClick={handleZoomOut}
+              style={{
+                padding: '4px 8px',
+                fontSize: '12px',
+                fontWeight: 800,
+                background: 'transparent',
+                color: '#F8FAFC',
+                border: 'none',
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+              title="Zoom Out (-25%)"
+            >
+              ➖
+            </button>
+            <button
+              type="button"
+              onClick={handleResetZoom}
+              style={{
+                padding: '4px 8px',
+                fontSize: '11px',
+                fontWeight: 700,
+                background: 'transparent',
+                color: '#94A3B8',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              title="Reset Zoom to 100%"
+            >
+              100%
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => reactFlowInstance?.fitView({ padding: 0.18, duration: 400 })}
+            onClick={handleFitView}
             style={{
               padding: '5px 10px',
               fontSize: '11px',
@@ -476,6 +565,7 @@ export default function CyberInvestigationGraph({
               borderRadius: '6px',
               cursor: 'pointer',
             }}
+            title="Auto-Fit All Nodes into View"
           >
             ⤢ Fit View
           </button>
@@ -555,15 +645,27 @@ export default function CyberInvestigationGraph({
           onEdgeClick={handleEdgeClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          onInit={setReactFlowInstance}
+          onInit={(instance) => {
+            reactFlowRef.current = instance;
+            setReactFlowInstance(instance);
+          }}
+          onlyRenderVisibleElements={true}
+          zoomOnScroll={true}
+          zoomOnPinch={true}
+          zoomOnDoubleClick={true}
+          panOnScroll={false}
+          panOnDrag={true}
+          selectionOnDrag={false}
+          zoomActivationKeyCode={null}
+          minZoom={0.15}
+          maxZoom={3.5}
           fitView
           fitViewOptions={{ padding: 0.18 }}
-          minZoom={0.2}
-          maxZoom={2.4}
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#1E293B" gap={28} size={1.2} />
           <Controls
+            showInteractive={false}
             style={{
               background: '#0F172A',
               border: '1px solid #334155',

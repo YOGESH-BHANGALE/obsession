@@ -89,6 +89,12 @@ export default function NetworkGraph({
       elements: elements,
       boxSelectionEnabled: false,
       autounselectify: false,
+      wheelSensitivity: 0.35, // Responsive, fast wheel zoom
+      minZoom: 0.15,
+      maxZoom: 3.5,
+      pixelRatio: 'auto',
+      textureOnViewport: true, // Hardware-accelerated snapshot during active zoom
+      motionBlur: false,
       style: [
         // Node base
         {
@@ -242,6 +248,13 @@ export default function NetworkGraph({
             'line-style': 'dotted',
           },
         },
+        // Zoom-gated edge labels shown cleanly when zoomed in
+        {
+          selector: 'edge.zoomed-labels',
+          style: {
+            'label': 'data(label)',
+          },
+        },
         // Edge selected or hovered
         {
           selector: 'edge:selected',
@@ -258,14 +271,18 @@ export default function NetworkGraph({
     // Apply spacious layout
     applyLayout(cy, layoutName);
 
-    // Zoom listener for zoom-gated edge labels
+    // Zoom listener for zoom-gated edge labels (class toggle only — zero React state lag)
+    let isZoomedIn = false;
     cy.on('zoom', () => {
       const z = cy.zoom();
-      setZoomLevel(z);
-      if (z > 1.3) {
-        cy.edges().style('label', (e) => e.data('label'));
-      } else {
-        cy.edges().filter(':unselected').style('label', '');
+      const nowZoomed = z > 1.25;
+      if (nowZoomed !== isZoomedIn) {
+        isZoomedIn = nowZoomed;
+        if (nowZoomed) {
+          cy.edges().addClass('zoomed-labels');
+        } else {
+          cy.edges().removeClass('zoomed-labels');
+        }
       }
     });
 
@@ -463,17 +480,47 @@ export default function NetworkGraph({
           />
           <button
             className="btn btn-sm btn-outline"
-            title="Fit view"
-            onClick={() => cyRef.current && cyRef.current.fit(null, 50)}
+            title="Zoom In (+25%)"
+            onClick={() => {
+              if (cyRef.current) {
+                const cy = cyRef.current;
+                cy.zoom({
+                  level: cy.zoom() * 1.25,
+                  renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+                });
+              }
+            }}
           >
-            ⛶ Fit
+            ➕ In
           </button>
           <button
             className="btn btn-sm btn-outline"
-            title="Reset Zoom"
+            title="Zoom Out (-25%)"
+            onClick={() => {
+              if (cyRef.current) {
+                const cy = cyRef.current;
+                cy.zoom({
+                  level: cy.zoom() / 1.25,
+                  renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+                });
+              }
+            }}
+          >
+            ➖ Out
+          </button>
+          <button
+            className="btn btn-sm btn-outline"
+            title="Reset Zoom to 100%"
             onClick={() => cyRef.current && cyRef.current.reset()}
           >
             100%
+          </button>
+          <button
+            className="btn btn-sm btn-outline"
+            title="Fit all nodes"
+            onClick={() => cyRef.current && cyRef.current.fit(null, 50)}
+          >
+            ⛶ Fit
           </button>
         </div>
       </div>

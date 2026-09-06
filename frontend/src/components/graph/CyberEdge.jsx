@@ -147,7 +147,7 @@ function CyberEdge({
               color: '#FFFFFF',
               whiteSpace: 'nowrap',
               fontFamily: "'Inter', system-ui, sans-serif",
-              transition: 'all 0.15s ease',
+              transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             }}
           >
             {/* Main Actionable Label */}
