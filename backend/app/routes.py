@@ -1436,14 +1436,172 @@ def get_events(case_id: str, event_type: Optional[str] = None, current_user: Use
 
 @router.get("/api/cases/{case_id}/timeline/past")
 def get_past_timeline(case_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Unified chronological evidentiary timeline combining FIRs, surveillance sightings, major transactions, and network events."""
+    person_lookup = {p.id: p.name for p in db.query(Person).filter(Person.case_id == case_id).all()}
+    timeline_items = []
+    seen_keys = set()
+
+    # 1. Registered FIR Records
+    firs = db.query(FIRRecord).filter(FIRRecord.case_id == case_id).all()
+    for fir in firs:
+        ts = fir.date.isoformat() if fir.date else ""
+        if not ts:
+            continue
+        accused_names = []
+        if fir.person_id and fir.person_id in person_lookup:
+            accused_names.append(person_lookup[fir.person_id])
+        for pid, name in person_lookup.items():
+            if name.lower() in (fir.description or "").lower() and name not in accused_names:
+                accused_names.append(name)
+
+        key = f"fir_{fir.fir_number}"
+        if key not in seen_keys:
+            seen_keys.add(key)
+            timeline_items.append({
+                "id": f"fir_{fir.id}",
+                "timestamp": ts,
+                "event_type": "crime_incident",
+                "category": "crime",
+                "severity": "critical",
+                "title": f"Police FIR: {fir.fir_number}",
+                "description": fir.description or fir.offence,
+                "offence": fir.offence,
+                "location": fir.police_station or "Police Jurisdiction",
+                "evidence_ref": fir.fir_number,
+                "involved_persons": accused_names,
+                "linked_entity_ids": [fir.person_id] if fir.person_id else [],
+                "source": fir.police_station or "State Police"
+            })
+
+    # 2. Existing Event records
     events = db.query(Event).filter(
         Event.case_id == case_id, Event.is_predicted == False
     ).order_by(Event.timestamp).all()
-    return [{
-        "id": e.id, "timestamp": e.timestamp.isoformat() if e.timestamp else "",
-        "event_type": e.event_type, "description": e.description,
-        "linked_entity_ids": e.linked_entity_ids,
-    } for e in events]
+    for e in events:
+        ts = e.timestamp.isoformat() if e.timestamp else ""
+        if not ts:
+            continue
+        desc_start = (e.description or "")[:30].lower()
+        if any(desc_start in (x["description"] or "").lower() for x in timeline_items if x["category"] == "crime"):
+            continue
+
+        entities = e.linked_entity_ids if isinstance(e.linked_entity_ids, list) else []
+        if isinstance(entities, str):
+            try:
+                entities = json.loads(entities)
+            except Exception:
+                entities = []
+        person_names = [person_lookup.get(x, x) for x in entities if x]
+
+        cat = "crime" if e.event_type == "crime_event" else "telecom"
+        sev = "critical" if cat == "crime" else "medium"
+        title = "Registered Crime Event" if cat == "crime" else "SIGINT / Communication Spike"
+        if "restaurant" in (e.description or "").lower():
+            cat = "surveillance"
+            sev = "high"
+            title = "Multi-Target Rendezvous Identified"
+        elif "anomalous" in (e.description or "").lower() or "speed" in (e.description or "").lower():
+            cat = "telecom"
+            sev = "high"
+            title = "Tower Velocity Anomaly Detected"
+
+        timeline_items.append({
+            "id": str(e.id),
+            "timestamp": ts,
+            "event_type": e.event_type,
+            "category": cat,
+            "severity": sev,
+            "title": title,
+            "description": e.description or "Chronological network event",
+            "location": "Operational Field" if cat == "surveillance" else "Cellular Network",
+            "evidence_ref": "SIGINT Telemetry" if cat == "telecom" else "Case Record",
+            "involved_persons": person_names,
+            "linked_entity_ids": entities,
+            "source": "Investigative Core"
+        })
+
+    # 3. Physical Surveillance Rendezvous Sightings
+    survs = db.query(SurveillanceRecord).filter(SurveillanceRecord.case_id == case_id).all()
+    for s in survs:
+        ts = s.timestamp.isoformat() if s.timestamp else ""
+        if not ts:
+            continue
+        observed = s.observed_person_ids if isinstance(s.observed_person_ids, list) else []
+        if isinstance(observed, str):
+            try:
+                observed = json.loads(observed)
+            except Exception:
+                observed = []
+        observed_names = [person_lookup.get(x, x) for x in observed if x]
+        primary_name = person_lookup.get(s.person_id, "Subject")
+        all_persons = [primary_name] + [name for name in observed_names if name != primary_name]
+
+        city = "Field Location"
+        desc_lower = (s.description or "").lower()
+        if "mumbai" in desc_lower:
+            city = "Mumbai"
+        elif "delhi" in desc_lower:
+            city = "Delhi"
+        elif "pune" in desc_lower:
+            city = "Pune"
+        elif "bangalore" in desc_lower or "bengaluru" in desc_lower:
+            city = "Bengaluru"
+        elif "lucknow" in desc_lower:
+            city = "Lucknow"
+        elif "kolkata" in desc_lower:
+            city = "Kolkata"
+        elif "hyderabad" in desc_lower:
+            city = "Hyderabad"
+        elif "chennai" in desc_lower:
+            city = "Chennai"
+
+        timeline_items.append({
+            "id": f"surv_{s.id}",
+            "timestamp": ts,
+            "event_type": "surveillance_meetup",
+            "category": "surveillance",
+            "severity": "high" if observed_names else "medium",
+            "title": f"Surveillance Sighting — {city}",
+            "description": s.description or "Field surveillance sighting recorded.",
+            "location": city,
+            "evidence_ref": s.source or "Field Unit",
+            "involved_persons": all_persons,
+            "linked_entity_ids": [s.person_id] if s.person_id else [],
+            "source": s.source or "Surveillance Wing"
+        })
+
+    # 4. Major Financial Movements (>= 2 Lakhs)
+    major_txs = db.query(TransactionRecord).filter(
+        TransactionRecord.case_id == case_id,
+        TransactionRecord.amount >= 200000
+    ).order_by(TransactionRecord.timestamp.asc()).all()
+
+    for tx in major_txs:
+        ts = tx.timestamp.isoformat() if tx.timestamp else ""
+        if not ts:
+            continue
+        sender = person_lookup.get(tx.sender_person_id, "Source Account")
+        receiver = person_lookup.get(tx.receiver_person_id, "Beneficiary")
+
+        timeline_items.append({
+            "id": f"tx_{tx.id}",
+            "timestamp": ts,
+            "event_type": "financial_flow",
+            "category": "financial",
+            "severity": "high" if tx.amount >= 1000000 else "medium",
+            "title": f"₹{tx.amount:,.0f} Hawala / Wire Flow",
+            "description": tx.description or f"High-value financial transfer of ₹{tx.amount:,.0f} from {sender} to {receiver} via {tx.platform}.",
+            "amount": tx.amount,
+            "platform": tx.platform,
+            "location": "Banking / Hawala Node",
+            "evidence_ref": f"{tx.platform} (Acc: {tx.sender_account} → {tx.receiver_account})",
+            "involved_persons": [sender, receiver],
+            "linked_entity_ids": [x for x in [tx.sender_person_id, tx.receiver_person_id] if x],
+            "source": "Financial Intelligence Unit"
+        })
+
+    timeline_items.sort(key=lambda x: x["timestamp"])
+    return timeline_items
 
 
 @router.get("/api/cases/{case_id}/timeline/predicted")
