@@ -1,0 +1,18 @@
+[
+  {
+    "person_name": "Karan Joshi",
+    "platform": "Telegram",
+    "interaction_type": "message",
+    "target_person": "Amit Patel",
+    "timestamp": "2024-06-06T14:00:00+00:00",
+    "content": "Encrypted Channel #GARUDA_ALPHA: Payload tested clean on VirusTotal. Forwarding the spoofed PDF invoice template for the corporate wire."
+  },
+  {
+    "person_name": "Amit Patel",
+    "platform": "Telegram",
+    "interaction_type": "message",
+    "target_person": "Karan Joshi",
+    "timestamp": "2024-06-06T14:15:00+00:00",
+    "content": "TOR relay is operational at 185.220.101.42. Domain resolves to c2-vault-relay.is. Standing by for payout confirmation."
+  }
+]

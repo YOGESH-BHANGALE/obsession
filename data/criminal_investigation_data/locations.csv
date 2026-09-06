@@ -1,0 +1,151 @@
+location_id,city,state,area,location_type,latitude,longitude,pincode
+3db20bf7-9a12-4ec3-a10b-d0b44db05cb1,Davarpar,Uttar Pradesh,Andheri West Residential Colony,residential,26.7142,83.3698,273016
+6117ba7e-5dfb-44a0-a425-b11cd0f2f028,Naurangpura,Rajasthan,Koramangala 5th Block Market,market,26.9805,75.7243,303003
+f77c2362-fa09-4024-9ad2-7cf845b2b17e,Jakhirpur,West Bengal,Sadar Bazaar Police Station,police_station,24.4388,88.3645,733141
+677b943d-7828-4146-9dbe-db090c179e46,Janawad,Rajasthan,Dadar Railway Transport Hub,transport_hub,25.2832,73.7745,313333
+acf95cbc-185f-41f6-abd6-8eae56de4478,Mannam Nagar,Kerala,Connaught Place Commercial Complex,commercial,9.2841,76.929,689501
+48334aae-dd4b-4559-927f-4011694a1d92,Jaisindh,Rajasthan,Saket District Court,court,25.8136,70.4343,344501
+8e5036df-127c-4594-9192-f94d067db20e,Chippada,Andhra Pradesh,Bhiwandi Industrial Warehouse Zone,warehouse,17.8909,82.6924,531162
+52af94bf-29a6-4158-b962-6a4fcd19d2be,Devanur,Karnataka,Taj Gateway Hotel,hotel,12.3244,75.8033,571219
+cf211dcd-89bd-42b4-9672-5311955f96e7,Muninagar,West Bengal,Banjara Hills Heritage Restaurant,restaurant,23.141,87.135,722122
+433d1091-50e0-46d0-b34d-21ea36046dae,Marma,Odisha,Akshardham Religious Complex,religious_site,19.3623,83.5138,765034
+736c90c6-9a18-43b8-bb0f-6bcf33dc8dab,Dudhad,Maharashtra,Attari Border Area,border_area,19.8503,75.5783,431154
+2ed4c69b-411d-4afd-bb03-e20234666fd9,Mamidivalasa,Andhra Pradesh,Jayanagar 4th Block Residential Area,residential,18.5333,83.7375,532123
+8b290e9f-43ac-4762-b2a2-f30d65d03bed,Neendar,Rajasthan,Linking Road Commercial Strip,commercial,26.9805,75.7243,302013
+8382482c-b106-46dc-83bd-d519ac2530f3,Dungri Pindarpar,Uttarakhand,Burrabazar Wholesale Market,market,30.016,79.5907,246481
+3a90b419-d49b-432d-b67f-8fef620d5ecd,Dhamrancha,Maharashtra,Colaba Police Station,police_station,19.3301,80.0682,442709
+d1739ddb-7365-4554-a76b-d261f099ae21,Deva,Andhra Pradesh,Majestic Bus Transport Hub,transport_hub,16.8946,81.4023,534123
+f4943b36-f9dd-415b-832e-bfdfc44bfab0,Silwala Kalan,Rajasthan,Patiala House District Court,court,29.0409,74.5576,335525
+3caa4f89-9dce-4bf1-8c9a-0c858356d4aa,Jalbera,Haryana,Chakan Cargo Warehouse Facility,warehouse,30.3133,76.775,134008
+9c3ab627-7bf2-4906-a00a-aa7a9d1113bd,Khushalpura,Gujarat,Grand Residency Hotel,hotel,21.2623,73.0694,394650
+12fd7c68-ddcd-4eb1-8122-5e012bed78f1,Govandi,Maharashtra,Park Street Dining Restaurant,restaurant,18.9808,72.8338,400088
+d6f40bfd-4360-4e5a-b544-68d5bf70b311,Kakarla,Andhra Pradesh,Siddhivinayak Religious Shrine,religious_site,15.5236,79.7514,523253
+b32c5e6f-8770-4d7f-b94e-fd0dadf72904,Ramnagar Shibpur,West Bengal,Raxaul Border Checkpost Area,border_area,22.03,88.2873,743374
+bf0ceee0-aca6-4168-85a6-2ec3eb7b5261,Joura Khurd,Madhya Pradesh,Salt Lake City Residential Block,residential,26.3854,77.7557,476001
+9d0acc1a-7cf8-43d2-b9dd-df559896f394,Parbatipur,Odisha,MG Road Commercial Plaza,commercial,21.4898,86.917,756166
+577a7f7d-a1ab-4ae4-a4a4-967c0db47f84,Barbhita,Assam,KR Puram Market,market,26.1271,90.608,783101
+c0975979-9043-4963-855f-ca856764a207,Mutharasikuppam,Tamil Nadu,Lal Bazaar Police Station,police_station,12.9862,79.0316,632106
+86fefb20-41f1-4cf7-8888-b9afdb990b01,Masgaon,Uttar Pradesh,Kashmere Gate Interstate Transport Hub,transport_hub,25.6774,79.8814,210506
+5e7265f2-e024-4948-ae97-9577296c20d5,Moran,Assam,Tis Hazari District Court,court,27.0073,94.82,785669
+a684d76b-fc88-4771-ac63-cb6776a45e23,Devenampalayam,Tamil Nadu,Okhla Industrial Warehouse Area,warehouse,10.8274,77.1841,642120
+d9656d90-576d-4a2f-92f6-d46ca668ee37,Maldan,Maharashtra,The Oberoi Grand Hotel,hotel,17.6661,74.1735,415112
+fd043a74-90df-4cb0-8c21-56031623907b,Kota Kutchery,Rajasthan,Karim Heritage Restaurant,restaurant,24.9796,76.0327,324001
+cca2418e-5650-42dc-add4-f55d74d47fd4,Shimoga Ambedkarnagar,Karnataka,Lotus Temple Religious Site,religious_site,14.0147,75.4016,577201
+3589d79f-1eb4-48f8-9a21-e9aead62416a,Tithgam,Gujarat,Dawki Border Area,border_area,24.284,72.0332,385575
+b0d541e6-03ce-4db7-be47-eba21bd01943,Kesramal,Odisha,Malabar Hill Residential Enclave,residential,22.0798,84.5106,770017
+da97debf-a2c0-4f37-9708-76fe4aef4637,Harna,Bihar,Cyber City Commercial Park,commercial,26.3201,86.277,847404
+5a8c6168-07ce-4d7b-a362-42040a53b054,Majhihara,Odisha,Manicktala Fish Market,market,20.09,85.5114,752103
+d0184a09-161d-4442-9ae0-17c96fb4622e,Lundra,Chattisgarh,Cunningham Road Police Station,police_station,23.1237,83.4078,497101
+fe52c460-73d2-4cee-9b9b-df1298a64904,Salma,West Bengal,Secunderabad Railway Transport Hub,transport_hub,23.5673,87.108,722143
+70541888-79db-48a8-84ec-0f9f8ce6d7d8,Mandar Kalan,Punjab,High Court of Judicature,court,30.9077,75.1601,142043
+256aab43-0c6d-401c-b922-b756b4f3c7f1,Kotaseetharampuram,Andhra Pradesh,Tondiarpet Cargo Warehouse,warehouse,18.5194,83.3633,535559
+f8fb5476-9b84-42d2-adaa-52d8c313d7d2,Badapal,Odisha,Hyatt Regency Hotel,hotel,21.4898,86.917,756019
+d22f0418-222a-43bb-97e9-b2ceea60e9f1,Ramnagar,West Bengal,Tunday Kababi Restaurant,restaurant,25.4155,87.8604,732201
+99e9a460-ceb3-4609-9a0f-4dce99ada1b2,Bhiri,Uttarakhand,Velankanni Shrine Religious Site,religious_site,30.5303,79.0589,246419
+f5286c50-0096-4347-8bcf-6a7390ccf886,Sour,Uttarakhand,Moreh Border Area,border_area,30.3471,78.2406,249145
+5fe5dbf8-7a2a-48e8-9772-3cf1d29df5c4,Nayashi,Maharashtra,Anna Nagar Residential Sector,residential,17.2734,73.4573,415608
+224509af-d2a1-4d77-88c6-cfedcfd3682c,Enamakkal,Kerala,Nariman Point Commercial District,commercial,10.5115,76.0936,680510
+c059e218-b273-4941-8842-7fa64f52a475,Yellamalai,Tamil Nadu,Gandhi Bazaar Market,market,11.5338,76.5361,643228
+a1ac6dda-cf2b-4f37-b3bf-4697fe4e7bff,Lasiyari,Uttarakhand,Esplanade Police Station,police_station,30.0941,79.3237,246424
+c02d795c-a08a-4eac-b4c4-4fefaf879cf7,Artiyan Kallan,Rajasthan,Kempegowda Bus Transport Hub,transport_hub,26.7324,73.1533,342606
+dd1fd215-3763-45b2-b28b-73a4e5330322,Satara,Maharashtra,City Civil Court Complex,court,17.6661,74.1735,415001
+abc3dac6-1bb5-41f9-bb42-3e43194cf9ca,Chinnur,Telangana,Alipore Residential Enclave,residential,18.696,78.2131,503108
+602d9768-51c6-48ac-b514-d39a38aa8cab,Naranpura Kampa,Gujarat,Bandra Kurla Complex Commercial Zone,commercial,23.8073,73.0353,383310
+00a42346-d879-4b27-992c-2d6a762e66dd,Mailam,Tamil Nadu,Chandni Chowk Wholesale Market,market,12.1235,79.6266,604304
+399368c8-c978-469c-be30-609d71bcffc7,Alas,Maharashtra,Cubbon Park Police Station,police_station,16.4704,74.1612,416104
+45e803a1-d704-4e47-9f8a-a5fe1b39d690,Wangbal,Manipur,High Court Complex,court,24.5532,93.968,795138
+75380c1f-4115-442a-9723-069166b18ee0,Jangle Agahi,Uttar Pradesh,Howrah Junction Transport Hub,transport_hub,26.6579,83.3614,273165
+cc25d34d-0396-4913-b1c3-0766f4f66c68,Kalikrishnagar,Tripura,Bhiwandi Cargo Warehouse Depot,warehouse,23.3481,91.3204,799132
+385fa6c3-4652-4cd3-9e88-aa4c1c315acd,Thummalapalle,Andhra Pradesh,The Leela Palace Hotel,hotel,14.7559,78.3225,516309
+c49dcf9b-a287-4147-9eb8-e168df91c147,Angbrashu,Manipur,Mavalli Tiffin Room Restaurant,restaurant,24.5308,93.9716,795135
+716fe4d7-9c39-405b-82f3-a7646ee323f6,Kadammanitta,Kerala,Golden Temple Religious Site,religious_site,9.2422,76.7424,689649
+014215a7-d217-430a-8364-14c98610181e,Hadmatiya,Gujarat,Jaura Border Area,border_area,22.4342,70.4791,360110
+9dda0b2e-ff57-4c9e-ac43-43e122f085c1,Malav,Uttar Pradesh,Vasant Kunj Residential Colony,residential,27.9805,77.7653,202165
+fa611201-3cf8-479a-86a9-0a3dd9f725ff,Kotekere,Karnataka,Nehru Place Commercial Center,commercial,11.9343,76.6421,571109
+79815ee3-1b5e-458f-bab4-9cfefbbc415d,Lamakhera,Uttarakhand,Johari Bazaar Market,market,28.9817,79.727,262405
+b9753cbb-9cd4-451b-9705-22cc5bde2d04,Chargola Bazar,Assam,Cumballa Hill Police Station,police_station,24.8513,92.3148,788713
+3548beb9-6adf-49db-968e-bb7eea1585ad,Padumbasan,West Bengal,Madurai District Court,court,22.0208,87.7744,721636
+6ae8f8bc-d9f0-4ab8-8ed3-76bda6432303,Barooki,Uttar Pradesh,Maharana Pratap Transport Hub,transport_hub,29.4059,78.3393,246764
+731dea87-33eb-4d96-b9a2-badc96e00b51,Kanakore,Uttar Pradesh,Manesar Logistics Warehouse,warehouse,28.5348,79.9752,262001
+0d0270bd-2e73-46ba-8a90-6a03ed0586b6,E.Kottapatty,Tamil Nadu,ITC Grand Chola Hotel,hotel,9.8337,77.6787,625535
+fefa7954-f048-4a1b-abb2-bc926dfdd123,Hirethogaleri,Karnataka,MTR Heritage Restaurant,restaurant,14.0261,75.9911,577007
+d5a1bd73-cd7f-4fdb-a391-b386895777aa,Barhyachowk,Uttar Pradesh,Palitana Temple Religious Site,religious_site,26.6579,83.3614,273165
+db717a45-5491-48ac-ab83-6c494e47532c,Panga,Kerala,Pangong Border Area,border_area,10.9712,76.0844,679338
+09265518-c1a8-49d8-9c02-a60d850ef854,Chharwada,Gujarat,Powai Lake Residential Sector,residential,20.4179,73.1217,396030
+6e52fc9a-f78d-4af7-8767-7e8f2a460895,Mahuawa,Bihar,Sector 18 Commercial Market,commercial,26.576,85.5397,843334
+4d351ee6-91ed-4061-aa7d-dcda91023f2a,Kurani Buzawade,Maharashtra,KR Market Flower Yard,market,15.9249,74.1646,416509
+c72b3670-988d-4140-b70e-75cb3ec17b11,Eja,Uttar Pradesh,Colaba Police Precinct,police_station,27.2599,80.243,241001
+546f61c4-b23c-454c-97a1-8172126c2eb1,Narewadi,Maharashtra,Majestic Bus Transport Hub,transport_hub,16.167,74.4682,416506
+3657e03b-3d50-4b79-9079-c8ce5b4fcd39,Kutenchuan,Odisha,Supreme Court of India,court,20.7328,82.591,766105
+03f4af80-1def-4823-bfa0-337b4814ad8a,Ochhari,Rajasthan,Bawana Industrial Warehouse Zone,warehouse,24.8287,74.7797,312001
+fc6ab120-b7e8-4540-a5b8-b11a84a130e7,Katgar,Karnataka,Taj Mahal Palace Hotel,hotel,14.0297,74.528,581354
+5afe0c58-ef26-4319-883f-658b513ec377,Chandametta,Madhya Pradesh,Mavalli Tiffin Room Restaurant,restaurant,22.1901,78.7047,480447
+4a112051-0cf1-43ef-beec-1a7e9a17cc89,N C Line,Uttar Pradesh,Siddhivinayak Temple Religious Site,religious_site,26.5989,80.2289,208002
+d476c65b-b5f7-4b45-92c9-9d055266a324,Silitia,Odisha,Attari Border Area,border_area,21.7118,85.5927,758032
+d11dad4d-c5b0-4f41-9bcd-c07fed06695f,Kanheypur,Uttar Pradesh,Juhu Beach Residential Area,residential,27.246,79.4816,209743
+1ab2e194-0820-4f38-95a6-48060600b32e,Tanur,Kerala,Connaught Place Commercial Circle,commercial,10.9393,75.8995,676302
+60e018cc-80fd-40d1-be1b-e65e6d11acc3,Panapakam,Andhra Pradesh,Crawford Market Wholesale Zone,market,13.4967,79.2094,517112
+fc95a8f1-8226-4323-8a5a-6d16cd95de50,Shenbagapudur,Tamil Nadu,Salt Lake Sector V Commercial Park,commercial,11.5152,77.4143,638402
+88f5cf00-b2bf-4ddd-9579-e495c6cecc0c,Charan Nikol,Gujarat,Chhatrapati Shivaji Maharaj Transport Hub,transport_hub,22.9166,73.1325,387640
+bd0cc5b9-a10c-4248-ab8d-36760d53b6a0,Kavuru,Andhra Pradesh,Dwarka Sub-City Residential Colony,residential,16.1397,80.1225,522309
+5de0aec7-f8dc-425d-8e90-d5e96c9c6fb3,Kachhwa,Uttar Pradesh,Chandigarh District Court Complex,court,25.2061,82.7144,231501
+d890e6e8-e9d5-40b8-8d55-7f7573bd97a1,Singibahar,Chattisgarh,Bandra Police Station,police_station,22.5473,83.9569,496227
+e470d50c-9ba3-4608-9d67-59d10e5ce261,Sarati,Maharashtra,Mehrauli Archaeological Religious Site,religious_site,18.5716,74.07,413103
+6c9f7d43-814e-48e7-8081-7acd5dc54b0a,Ujirpur,West Bengal,Raxaul Border Checkpoint Area,border_area,24.2663,87.9879,731237
+dcab7c79-270b-4d35-ad1e-3714b5b3d15b,Sukalwadi,Maharashtra,Andheri Logistics Warehouse Hub,warehouse,16.0889,73.6746,416534
+02f8a4a5-431b-4492-b02e-9f5dea78934c,Rahaniyaganj,Odisha,The Oberoi Cecil Hotel,hotel,21.4898,86.917,756044
+f5ea23e0-2fe9-4f7e-884b-7ae993d3219e,Nabedhi,Odisha,Bheema Restaurant,restaurant,21.7841,85.9164,757030
+aa506d6f-30b4-4fe7-bca6-7f2c04b28c17,Anara RS,West Bengal,KR Market Flower Bazaar,market,23.3808,86.4697,723126
+5f726314-bdf5-4a93-9587-b5924093f42c,Nandol,Odisha,Banjara Hills Residential Sector,residential,20.0472,83.3801,766002
+943731aa-f7f4-45ff-b9ae-48f396e860e0,Saltighat Gujarpur,West Bengal,Salt Lake Stadium Transport Hub,transport_hub,22.5211,88.1398,711401
+0f50f615-7033-4550-b3c0-1327c1c40070,Hundapalasapal,Odisha,Connaught Place Police Station,police_station,21.2532,85.5332,758028
+381ae24e-5183-4e34-97d6-ef99f38c569e,Thammadapalle,Andhra Pradesh,Malabar Hill Residential Enclave,residential,15.4873,78.5459,518512
+e137e7b2-7e1e-406d-bd4d-ca4981740883,Dubara,Uttar Pradesh,Gachibowli Financial District,commercial,26.0462,83.0798,276301
+961cb9df-ce49-4bb0-bab6-f5d0d1bee9b8,Varadoor,Kerala,Commercial Street Market,market,11.6563,76.1696,673591
+1c6b2c51-aa55-4558-ae96-d1770fade444,Kallipalli,Odisha,Koramangala Police Station,police_station,19.0714,84.5469,761002
+67ddcf81-7426-497f-b284-f589da94258d,Rampur Kalan,Uttar Pradesh,Madras High Court,court,26.4201,82.6708,224190
+f9e138a1-81a9-4077-9fbb-2529525867ac,Aurangpura,Madhya Pradesh,Kashmere Gate Transport Hub,transport_hub,22.7102,75.7072,451001
+0c59af77-a212-46d4-b2dc-84da2b403d3c,Metwada,Madhya Pradesh,Tughlakabad Warehouse Yard,warehouse,22.9651,76.5437,466118
+eb124da1-2037-4029-9592-d8ff47879b60,Ilanganathapuram,Tamil Nadu,The Oberoi Grand Hotel,hotel,8.7323,78.1194,628210
+6c7dd797-fff1-4ca6-a0ff-aba0dbaa726f,Rakshasbhuvan,Maharashtra,Karim Hotel Restaurant,restaurant,20.2597,74.0726,422007
+6f3b90d6-bf47-4007-b91f-248aa5d7305f,Panar,Gujarat,Akshardham Religious Site,religious_site,20.8228,72.892,396460
+f62681d9-41df-4831-8337-22e02d389b14,Pudumavilangai,Tamil Nadu,Hussainiwala Border Area,border_area,13.0737,79.8487,631203
+c979adee-c596-4e7a-ab3a-5fed248c8265,Rajapur,Karnataka,Anna Nagar Residential Sector,residential,16.1195,74.823,591224
+63567c45-207e-4463-9fb3-9061aea4680e,Kathania,Punjab,Nariman Point Commercial Hub,commercial,31.7061,74.9005,143105
+62b16554-83b1-4666-9e75-be493be17615,Mohd. Sadikpur,Uttar Pradesh,Manicktala Fish Market,market,28.9142,78.7854,244414
+a67d384b-edfc-4caa-8a46-8b72e3208724,Shampur,Telangana,Colaba Police Station,police_station,19.4199,78.7422,504346
+e44e89e9-4e92-4430-af77-94a617033bd3,Mathana Bichala,Uttarakhand,City Civil Court Complex,court,29.8375,78.6097,246127
+6e8456de-2415-4692-a9b7-33d42569b6d5,Murikunte,Karnataka,Kempegowda Bus Transport Hub,transport_hub,14.6046,76.1731,577513
+ec8e2774-5abd-4198-810b-d14d2f0b2f0d,Laxmipur Pokhariya,Bihar,Chakan Industrial Warehouse,warehouse,26.8709,84.8354,845433
+2b0ca621-d0f1-4f47-a2b9-1db10529d693,Kondaguttapalli,Andhra Pradesh,Taj Coromandel Hotel,hotel,14.179,78.1368,515541
+8670bb15-32d0-4ae2-b883-f73d786b4229,Dial Pura Mirja,Punjab,Tunday Kababi Restaurant,restaurant,30.3319,75.093,151102
+3b2bb895-120c-43af-bc7b-c14f67265184,South Soorankudy,Tamil Nadu,Velankanni Church Religious Site,religious_site,8.115,77.41,629501
+faceac5d-cef0-4845-be9d-06fa3701e641,Kamandanga,Assam,Jaisalmer Desert Border Sector,border_area,26.5145,90.1306,783332
+5d59a820-d519-48f6-8e6a-e6c34bb77689,Kalchina,Uttar Pradesh,Adarsh Nagar Residential Area,residential,28.7643,77.4856,245304
+5142d1c6-96f2-49c3-9a7d-0db46d67442c,Rayam,Gujarat,Cyber City Commercial Center,commercial,20.7171,73.0524,394355
+d6f6e5ed-9856-419b-98e8-2b989301f87a,Ramanathapuram,Tamil Nadu,Dadhel Market,market,11.514,78.5846,636104
+23d0938b-ad26-4713-afe3-7611f8baf2c9,Dadyal,Punjab,Lajpat Nagar Central Market,market,31.6259,75.86,144529
+3882bfc6-6f3e-42f1-acd5-875175110e2b,Chormar,Haryana,Karol Bagh Police Station,police_station,29.8033,74.8578,125077
+afdd5085-731a-4ddd-be19-44a21c8bc3e2,Kothali,Maharashtra,Patiala House Court Complex,court,21.0515,76.049,425306
+26761411-cf0a-4118-9225-5d7d50d855c6,Buriya,Haryana,Koyambedu Wholesale Market,market,30.1591,77.3581,135101
+ffcdef86-07ee-4f5c-b8fd-a47e6040283d,Kedlanagar,Jharkhand,Howrah Goods Warehouse Zone,warehouse,23.6307,85.5606,825325
+136eff02-aaa9-4d02-9322-e157b879657b,Netra,Rajasthan,The Leela Palace Hotel,hotel,25.6373,73.648,306902
+1969e447-bf24-4d61-88f9-2ccf451da1f9,Ichak,Jharkhand,MTR Restaurant Express,restaurant,23.865,84.7323,829202
+2796f166-4b38-41c0-aa90-df4c3f1d5918,Tamulichiga,Assam,Golden Temple Religious Site,religious_site,27.0073,94.82,785682
+30a28f6c-c417-4a0d-bbab-ea3cbe4771ab,Bedkihal,Karnataka,Moreh International Border Area,border_area,16.3084,75.1161,591214
+d6543cb1-8eae-431f-aa0f-426dc3d2d8aa,Kannur Railway Station,Kerala,Powai Lake Residential Enclave,residential,11.9357,75.3485,670001
+bbdca28f-c49f-4ec2-8ae6-6634c58f2755,Utari,Jharkhand,Bandra Kurla Complex Commercial Zone,commercial,24.5454,84.0705,822116
+f0f86fcc-117f-4c6d-8a1e-46c45b1b8072,Laugaon,Uttar Pradesh,Howrah Railway Transport Hub,transport_hub,25.763,80.7734,212621
+3bcf3cb2-15e9-4118-b082-241e75e7f818,Nawad,Rajasthan,Kapurthala Police Station,police_station,27.064,74.1879,341319
+f635f2bf-e22f-4f52-980e-3ff7681f1784,Moi Purani,Rajasthan,High Court of Karnataka,court,28.045,75.832,333516
+32a1289c-5423-492e-99ff-35bf1bfde5d8,Syoli Talli,Uttarakhand,Bhiwandi Logistics Warehouse Hub,warehouse,30.0576,78.8971,246123
+e3ab6e89-229d-4cd6-9439-4bf6ef14629c,Korai,Uttar Pradesh,ITC Grand Chola Hotel,hotel,25.8736,80.8074,212601
+23e9c381-d190-47d0-88a3-80108b8175f4,Yedehalli,Karnataka,Saravana Bhavan Restaurant,restaurant,13.9904,75.7654,577227
+dd569924-080f-4344-80fb-cdbb7bc41e6a,Nadan Mahal,Uttar Pradesh,Jagannath Temple Religious Site,religious_site,26.6879,81.1386,226003
+5878b6b5-ddea-43ed-a422-a5c6b6357b07,Sandhu,Himachal Pradesh,Dawki River Border Area,border_area,31.1553,77.3822,171222
+0ef6a8e7-98bf-41b7-a775-e46b94c109c8,Garentha,Madhya Pradesh,Whitefield Residential Layout,residential,25.0839,78.163,473995
+0be8fffc-3af0-4ad1-baad-28ec2aa7f02f,Fatehpur Kalan,Uttar Pradesh,Nehru Place Commercial Center,commercial,29.2787,78.1877,246701
+2ecaeff5-cb3f-4727-8062-b27a7b63af15,Melarasambattu,Tamil Nadu,MG Road Metro Transport Hub,transport_hub,12.4665,78.5126,632103
+f34ee675-7a0e-436f-b6ca-61f475bbb7b6,Arugonda,Andhra Pradesh,Varanasi Ghat Market,market,13.4673,79.0143,517129
+44a689bd-ea9d-49fe-917d-79a7404e631f,Lokra,Assam,Connaught Place Police Precinct,police_station,26.7824,92.9393,784102
+4084b2c2-1a7b-4c95-8daf-73b43d009467,Sunoli,Uttarakhand,National Consumer Disputes Court,court,29.7098,79.7155,263601
