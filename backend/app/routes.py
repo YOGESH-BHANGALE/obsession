@@ -443,18 +443,23 @@ def seed_demo_case(
 
     # Surveillance
     surv_file = demo_dir / "surveillance_records.json"
+    if not surv_file.exists():
+        surv_file = DATA_SEED_DIR / "surveillance_records.json"
     if surv_file.exists():
         with open(surv_file, "r", encoding="utf-8") as f:
             for s in json.load(f):
                 pid = person_cache.get(s.get("person_name"))
+                lat = s.get("lat") if s.get("lat") is not None else s.get("location_lat")
+                lng = s.get("lng") if s.get("lng") is not None else s.get("location_lng")
                 db.add(SurveillanceRecord(
                     case_id=case_id,
                     person_id=pid,
-                    source=s["source"],
-                    timestamp=_parse_datetime(s["timestamp"]),
-                    description=s["description"],
-                    location_lat=s.get("location_lat"),
-                    location_lng=s.get("location_lng")
+                    source=s.get("source", "field_surveillance"),
+                    timestamp=_parse_datetime(s["timestamp"]) if s.get("timestamp") else None,
+                    description=s.get("description", ""),
+                    observed_person_ids=s.get("observed_with", []),
+                    location_lat=float(lat) if lat is not None else None,
+                    location_lng=float(lng) if lng is not None else None
                 ))
 
     # Criminal History
@@ -543,6 +548,35 @@ def seed_demo_case(
                         ))
         except Exception as err:
             print(f"Notice reading social media: {err}")
+
+    # Location Pings (GPS mesh across Mumbai, Delhi, Bengaluru)
+    loc_file = demo_dir / "location_pings.csv"
+    if not loc_file.exists():
+        loc_file = DATA_SEED_DIR / "location_pings.csv"
+    if loc_file.exists():
+        try:
+            with open(loc_file, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    pname = row.get("person_name", "").strip()
+                    pid = person_cache.get(pname)
+                    if pid:
+                        lat = float(row.get("lat", 0) or 0)
+                        lng = float(row.get("lng", 0) or 0)
+                        ts = _parse_datetime(row.get("timestamp", _utcnow_iso()))
+                        db.add(LocationPing(
+                            case_id=case_id,
+                            person_id=pid,
+                            lat=lat,
+                            lng=lng,
+                            timestamp=ts
+                        ))
+                        node = store.get_node(case_id, pid)
+                        trail = node.get("location_trail", [])
+                        trail.append({"lat": lat, "lng": lng, "timestamp": row.get("timestamp", "")})
+                        store.update_node_attrs(case_id, pid, {"location_trail": trail})
+        except Exception as err:
+            print(f"Notice reading location pings: {err}")
 
     db.flush()
 
@@ -1446,25 +1480,137 @@ def get_location_trail(
 
 @router.get("/api/cases/{case_id}/locations")
 def get_all_tracked_locations(case_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Get location data for all tracked persons in a case."""
+    """Get location data for all tracked persons in a case along with physical surveillance meetups."""
     store = get_graph_store()
-    persons = store.get_all_person_nodes(case_id)
-    inner_persons = [p for p in persons if p.get("confidence_band") == "inner"]
+    node_map = {}
+    try:
+        nodes = store.get_all_person_nodes(case_id)
+        node_map = {n["id"]: n for n in nodes if "id" in n}
+    except Exception:
+        pass
 
-    result = []
-    for p in inner_persons:
+    # Find all persons who have location pings or trails
+    pings_subq = db.query(LocationPing.person_id).filter(
+        LocationPing.case_id == case_id
+    ).distinct()
+    
+    persons = db.query(Person).filter(
+        Person.case_id == case_id,
+        Person.id.in_(pings_subq)
+    ).all()
+
+    person_dict = {p.id: p for p in persons}
+    # Also include any person from graph store if they have location_trail
+    for pid, node in node_map.items():
+        if pid not in person_dict and node.get("location_trail"):
+            p_obj = db.query(Person).filter(Person.id == pid).first()
+            if p_obj:
+                person_dict[pid] = p_obj
+
+    tracked = []
+    for pid, p in person_dict.items():
+        node = node_map.get(pid, {})
         pings = db.query(LocationPing).filter(
             LocationPing.case_id == case_id,
-            LocationPing.person_id == p["id"]
-        ).order_by(LocationPing.timestamp).all()
+            LocationPing.person_id == pid
+        ).order_by(LocationPing.timestamp.asc()).all()
+
+        trail = []
         if pings:
-            result.append({
-                "person_id": p["id"],
-                "name": p.get("name", ""),
-                "trail": [{"lat": ping.lat, "lng": ping.lng, "timestamp": ping.timestamp.isoformat()} for ping in pings],
-                "last_position": {"lat": pings[-1].lat, "lng": pings[-1].lng}
+            trail = [
+                {
+                    "lat": ping.lat,
+                    "lng": ping.lng,
+                    "timestamp": ping.timestamp.isoformat() if ping.timestamp else ""
+                }
+                for ping in pings
+            ]
+        elif node.get("location_trail"):
+            trail = node.get("location_trail", [])
+
+        if trail:
+            last_pos = {"lat": trail[-1]["lat"], "lng": trail[-1]["lng"]}
+            tracked.append({
+                "person_id": pid,
+                "person_name": p.name,
+                "name": p.name,
+                "confidence_band": p.confidence_band or node.get("confidence_band", "outer"),
+                "criminal_history_flag": bool(p.criminal_history_flag or node.get("criminal_history_flag")),
+                "location_trail": trail,
+                "trail": trail,
+                "last_position": last_pos,
+                "ping_count": len(trail)
             })
-    return result
+
+    # Sort tracked persons: inner first, then by ping count descending
+    band_order = {"inner": 0, "middle": 1, "outer": 2, "pruned": 3}
+    tracked.sort(key=lambda x: (band_order.get(x["confidence_band"], 2), -x["ping_count"]))
+
+    # Physical surveillance meetup spots
+    survs = db.query(SurveillanceRecord).filter(
+        SurveillanceRecord.case_id == case_id,
+        SurveillanceRecord.location_lat.isnot(None),
+        SurveillanceRecord.location_lng.isnot(None)
+    ).order_by(SurveillanceRecord.timestamp.asc()).all()
+
+    person_name_lookup = {p.id: p.name for p in db.query(Person).filter(Person.case_id == case_id).all()}
+
+    meetups = []
+    for s in survs:
+        observed = s.observed_person_ids if isinstance(s.observed_person_ids, list) else []
+        if isinstance(observed, str):
+            try:
+                observed = json.loads(observed)
+            except Exception:
+                observed = []
+        observed_names = [person_name_lookup.get(x, x) for x in observed if x]
+
+        # Detect city from lat/lng or description
+        city = "Observation Point"
+        desc_lower = (s.description or "").lower()
+        lat = s.location_lat or 0
+        lng = s.location_lng or 0
+        if "mumbai" in desc_lower or (18.8 <= lat <= 19.4 and 72.6 <= lng <= 73.1):
+            city = "Mumbai"
+        elif "delhi" in desc_lower or (28.3 <= lat <= 28.9 and 76.8 <= lng <= 77.5):
+            city = "Delhi"
+        elif "bangalore" in desc_lower or "bengaluru" in desc_lower or (12.8 <= lat <= 13.2 and 77.4 <= lng <= 77.8):
+            city = "Bengaluru"
+        elif "pune" in desc_lower or (18.4 <= lat <= 18.7 and 73.7 <= lng <= 74.0):
+            city = "Pune"
+        elif "kolkata" in desc_lower:
+            city = "Kolkata"
+        elif "lucknow" in desc_lower:
+            city = "Lucknow"
+        elif "hyderabad" in desc_lower:
+            city = "Hyderabad"
+        elif "chennai" in desc_lower:
+            city = "Chennai"
+
+        meetups.append({
+            "id": s.id,
+            "person_id": s.person_id,
+            "person_name": person_name_lookup.get(s.person_id, "Target Operative"),
+            "lat": s.location_lat,
+            "lng": s.location_lng,
+            "description": s.description or s.narrative or "Field surveillance meetup observation",
+            "source": s.source or "Field Unit",
+            "timestamp": s.timestamp.isoformat() if s.timestamp else "",
+            "observed_with": observed_names,
+            "city": city
+        })
+
+    return {
+        "tracked_persons": tracked,
+        "meetups": meetups
+    }
+
+
+@router.get("/api/cases/{case_id}/meetups")
+def get_case_meetups(case_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get physical surveillance meetup spots for a case."""
+    loc_data = get_all_tracked_locations(case_id, current_user, db)
+    return loc_data.get("meetups", [])
 
 
 # ═══════════════════════════════════════════════════════════════

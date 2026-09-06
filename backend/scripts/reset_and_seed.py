@@ -158,21 +158,28 @@ def reset_and_seed():
                 ))
 
     surv_file = BACKEND_DIR.parent / "data-generator" / "output" / "surveillance_records.json"
+    if not surv_file.exists():
+        surv_file = BACKEND_DIR / "data_seed" / "surveillance_records.json"
     if surv_file.exists():
         with open(surv_file, "r", encoding="utf-8") as f:
             for s in json.load(f):
                 p = db.query(Person).filter(Person.case_id == case_id, Person.name == s["person_name"]).first()
+                lat = s.get("lat") if s.get("lat") is not None else s.get("location_lat")
+                lng = s.get("lng") if s.get("lng") is not None else s.get("location_lng")
                 db.add(SurveillanceRecord(
                     case_id=case_id,
                     person_id=p.id if p else None,
-                    source=s["source"],
-                    timestamp=datetime.fromisoformat(s["timestamp"]),
-                    description=s["description"],
-                    location_lat=s.get("location_lat"),
-                    location_lng=s.get("location_lng")
+                    source=s.get("source", "field_surveillance"),
+                    timestamp=datetime.fromisoformat(s["timestamp"]) if s.get("timestamp") else None,
+                    description=s.get("description", ""),
+                    observed_person_ids=s.get("observed_with", []),
+                    location_lat=float(lat) if lat is not None else None,
+                    location_lng=float(lng) if lng is not None else None
                 ))
 
     crim_file = BACKEND_DIR.parent / "data-generator" / "output" / "criminal_history_records.json"
+    if not crim_file.exists():
+        crim_file = BACKEND_DIR / "data_seed" / "criminal_history_records.json"
     if crim_file.exists():
         with open(crim_file, "r", encoding="utf-8") as f:
             for c in json.load(f):
@@ -185,8 +192,33 @@ def reset_and_seed():
                     sentence=c.get("sentence", "")
                 ))
 
+    # Location Pings (GPS mesh across Mumbai, Delhi, Bengaluru)
+    loc_file = BACKEND_DIR.parent / "data-generator" / "output" / "location_pings.csv"
+    if not loc_file.exists():
+        loc_file = BACKEND_DIR / "data_seed" / "location_pings.csv"
+    if loc_file.exists():
+        with open(loc_file, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                p = db.query(Person).filter(Person.case_id == case_id, Person.name == row.get("person_name", "").strip()).first()
+                if p:
+                    lat = float(row.get("lat", 0) or 0)
+                    lng = float(row.get("lng", 0) or 0)
+                    ts = datetime.fromisoformat(row["timestamp"]) if row.get("timestamp") else None
+                    db.add(LocationPing(
+                        case_id=case_id,
+                        person_id=p.id,
+                        lat=lat,
+                        lng=lng,
+                        timestamp=ts
+                    ))
+                    node = store.get_node(case_id, p.id)
+                    trail = node.get("location_trail", [])
+                    trail.append({"lat": lat, "lng": lng, "timestamp": row.get("timestamp", "")})
+                    store.update_node_attrs(case_id, p.id, {"location_trail": trail})
+
     db.commit()
-    print("[OK] Populated raw evidence tables: FIRs, Surveillance, Criminal History")
+    print("[OK] Populated raw evidence tables: FIRs, Surveillance, Criminal History, Location Pings")
 
     # 7. Recompute scores & hierarchy
     recompute_all_scores(case_id)

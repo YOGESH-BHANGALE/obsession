@@ -106,6 +106,7 @@ export const timelineAPI = {
 export const locationAPI = {
   getTrail: (caseId, personId) => api.get(`/api/cases/${caseId}/locations/${personId}`),
   getAllTracked: (caseId) => api.get(`/api/cases/${caseId}/locations`),
+  getMeetups: (caseId) => api.get(`/api/cases/${caseId}/meetups`),
 };
 
 // ═══════════════ Audit Logs ═══════════════
