@@ -1,0 +1,116 @@
+# ============================================================
+# Criminal Network Analysis Platform — Master Configuration
+# ALL thresholds are here. NEVER hardcode values in source.
+# ============================================================
+
+# --- Graph Traversal ---
+traversal:
+  pruning_threshold: 0.25          # nodes below this are unexplored ('?')
+  membership_threshold: 0.75       # nodes above this are confirmed members
+  max_depth: 10                    # maximum DFS depth
+  auto_approve: false              # standing authorisation toggle
+
+# --- Confidence Zone Bands ---
+zones:
+  inner:
+    min: 0.75
+    label: "Core Member"
+    color: "#FFD600"               # yellow accent
+  middle:
+    min: 0.50
+    label: "Suspected Associate"
+    color: "#FFF9C4"               # light yellow
+  outer:
+    min: 0.25
+    label: "Peripheral Contact"
+    color: "#FFFFFF"               # white
+  # Nodes below 0.25 sit outside all rings with '?' placeholder
+
+# --- Suspicion Scoring Weights (must sum to 1.0) ---
+scoring:
+  link_strength: 0.20             # frequency of links to confirmed (>75%) members
+  recency: 0.15                   # exponential decay on link recency
+  corroboration: 0.20             # multi-source evidence types boost
+  centrality: 0.15                # degree + betweenness centrality
+  criminal_history: 0.15          # boolean boost for prior record
+  investigator_override: 0.15     # manual adjustments from feedback loop
+  recency_decay_halflife_days: 30 # half-life for exponential decay
+
+# --- Pattern Detection ---
+detectors:
+  communication_burst:
+    z_score_threshold: 2.5        # standard deviations above mean
+    window_days: 7
+  new_connections:
+    snapshot_interval_hours: 24
+  bridge_detection:
+    min_groups: 2
+  cross_case_matching:
+    similarity_threshold: 0.85
+  unusual_location:
+    max_speed_kmh: 200            # flag improbable transitions
+  co_location:
+    eps_km: 0.5                   # DBSCAN spatial epsilon
+    eps_hours: 1                  # DBSCAN temporal epsilon
+    min_samples: 3
+  unusual_transaction:
+    contamination: 0.1            # IsolationForest contamination
+  circular_transaction:
+    min_cycle_length: 3
+    max_cycle_length: 8
+  comm_location_correlation:
+    time_window_hours: 2
+  identity_hopping:
+    max_switch_interval_days: 7
+  new_community:
+    resolution: 1.0               # Louvain resolution parameter
+  network_activity:
+    trend_window_days: 14
+    increase_threshold: 2.0       # 2x increase flagged
+
+# --- Entity Resolution ---
+entity_resolution:
+  fuzzy_threshold: 85             # rapidfuzz score threshold for merge
+  phone_regex: "\\+?91[\\s-]?[6-9]\\d{9}"
+  vehicle_regex: "[A-Z]{2}\\d{2}[A-Z]{1,2}\\d{4}"
+  fir_regex: "FIR[\\s/-]?\\d{2,}/\\d{4}"
+
+# --- NLP ---
+nlp:
+  spacy_model: "en_core_web_sm"
+  custom_patterns:
+    - label: "PHONE"
+      pattern: "[{\"SHAPE\": \"dddddddddd\"}]"
+    - label: "VEHICLE"
+      pattern: "[{\"TEXT\": {\"REGEX\": \"[A-Z]{2}\\\\d{2}[A-Z]{1,2}\\\\d{4}\"}}]"
+
+# --- Forecasting ---
+forecasting:
+  method: "exponential_smoothing"  # or "arima"
+  forecast_days: 30
+  confidence_level: 0.95
+  min_data_points: 7
+
+# --- Auth ---
+auth:
+  secret_key: "CHANGE_ME_IN_PRODUCTION_hackathon_demo_key_2024"
+  algorithm: "HS256"
+  access_token_expire_minutes: 480
+  roles:
+    - investigator
+    - senior_authority
+    - admin
+
+# --- Server ---
+server:
+  backend_host: "0.0.0.0"
+  backend_port: 8000
+  frontend_port: 5173
+  cors_origins:
+    - "http://localhost:5173"
+    - "http://127.0.0.1:5173"
+
+# --- Database ---
+database:
+  sqlite_path: "data/criminal_network.db"
+  echo: false

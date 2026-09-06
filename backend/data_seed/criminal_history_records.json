@@ -1,0 +1,27 @@
+[
+  {
+    "person_name": "Vikram Malhotra",
+    "shared_case_ref": "CASE-2022-DEL-0789",
+    "offence": "Organized Cyber Fraud & Money Laundering syndicate",
+    "co_accused": [
+      "Pooja Nair"
+    ],
+    "sentence": "Chargesheet filed, currently on conditional high-court bail"
+  },
+  {
+    "person_name": "Pooja Nair",
+    "shared_case_ref": "CASE-2022-DEL-0789",
+    "offence": "Facilitating mule bank accounts & shell companies",
+    "co_accused": [
+      "Vikram Malhotra"
+    ],
+    "sentence": "Chargesheeted under IPC 420/120B"
+  },
+  {
+    "person_name": "Rohan Sharma",
+    "shared_case_ref": "CRIME-MUM-2021-884",
+    "offence": "Illegal Hawala transfers & Benami account operation",
+    "co_accused": [],
+    "sentence": "Arrested in 2021, convicted 18 months"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "fir_number": "FIR-2024-MUM-0204",
+    "police_station": "Cyber Crime Police Station, Bandra-Kurla Complex (BKC), Mumbai",
+    "date": "2024-06-02T10:00:00+00:00",
+    "offence": "IPC 420 (Cheating), 120B (Criminal Conspiracy), IT Act Sec 66C & 66D (Identity Theft & Cheating by Personation)",
+    "complainant": "Chief Risk Officer, Apex Global Logistics Pvt Ltd",
+    "accused": [
+      "Vikram Malhotra",
+      "Karan Joshi",
+      "Rohan Sharma"
+    ],
+    "description": "Spear-phishing compromise of executive corporate email resulting in fraudulent wire transfer of INR 5,20,00,000 to mule accounts controlled by Vikram Malhotra's network."
+  },
+  {
+    "fir_number": "FIR-2022-DEL-0789",
+    "police_station": "Special Cell, Cyber Highway Cyber Crime Unit, New Delhi",
+    "date": "2023-06-02T10:00:00+00:00",
+    "offence": "IPC 419, 420, 468, 471, IT Act 66D",
+    "complainant": "Cyber Crime Cell Suo Motu",
+    "accused": [
+      "Vikram Malhotra",
+      "Pooja Nair"
+    ],
+    "description": "Cross-border call-center scam and hawala laundering ring operating across NCR and Maharashtra."
+  },
+  {
+    "fir_number": "FIR-2024-BLR-0312",
+    "police_station": "CID Cyber Crime Police Station, Bengaluru",
+    "date": "2024-03-03T10:00:00+00:00",
+    "offence": "IT Act Sec 43, 66 (Hacking & Malware Distribution)",
+    "complainant": "National Critical Information Infrastructure Protection Centre (NCIIPC)",
+    "accused": [
+      "Amit Patel"
+    ],
+    "description": "Hosting bulletproof command-and-control (C2) domains and credential harvester portals used in corporate attacks."
+  }
+]

@@ -337,12 +337,15 @@ def seed_demo_case(
 
     candidate_files = [
         Path(__file__).resolve().parent.parent.parent / "data-generator" / "output" / "complete_case_data.json",
+        Path(__file__).resolve().parent.parent / "data_seed" / "complete_case_data.json",
         Path(__file__).resolve().parent.parent / "data-generator" / "output" / "complete_case_data.json",
+        Path.cwd() / "backend" / "data_seed" / "complete_case_data.json",
         Path.cwd() / "data-generator" / "output" / "complete_case_data.json",
     ]
     demo_file = next((p for p in candidate_files if p.exists()), None)
     if not demo_file:
         raise HTTPException(status_code=500, detail="Demo dataset not found. Run generator first.")
+    demo_dir = demo_file.parent
 
     # 1. Purge existing case records
     store = get_graph_store()
