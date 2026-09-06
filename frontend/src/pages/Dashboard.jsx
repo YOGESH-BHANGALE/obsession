@@ -70,17 +70,49 @@ export default function Dashboard({ user }) {
     setSeeding(true);
     setError('');
     try {
-      // 1. Create Demo Case
+      // Check if an Operation Garuda case already exists — reuse it to avoid duplicate cases
+      const existing = cases.find(c => c.title && c.title.toLowerCase().includes('garuda'));
+      if (existing) {
+        navigate(`/case/${existing.id}/graph`);
+        return;
+      }
       const res = await casesAPI.create({
         title: 'Operation Garuda — Syndicate Network',
         description: 'Multi-jurisdictional narcotics and illicit hawala financing syndicate involving ~40 operatives across India. Seed suspect: Vikram Malhotra.',
       });
-      const caseId = res.data.id;
-      // Navigate to case and auto-trigger ingestion or open case
-      navigate(`/case/${caseId}/upload?seed=true`);
+      navigate(`/case/${res.data.id}/upload?seed=true`);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to seed demo case');
+    } finally {
       setSeeding(false);
+    }
+  };
+
+  const handleDeleteCase = async (e, caseId) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this case? All associated records will be permanently deleted.')) {
+      return;
+    }
+    try {
+      await casesAPI.delete(caseId);
+      setCases(prev => prev.filter(c => c.id !== caseId));
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to delete case');
+    }
+  };
+
+  const handleResetCases = async () => {
+    if (!window.confirm('Reset cases so only 1 clean primary case remains? Extra duplicate cases will be removed.')) {
+      return;
+    }
+    setLoading(true);
+    try {
+      await casesAPI.resetClean();
+      await loadCases();
+    } catch (err) {
+      setError('Failed to reset cases');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +129,16 @@ export default function Dashboard({ user }) {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {cases.length > 1 && (
+            <button
+              className="btn btn-outline"
+              onClick={handleResetCases}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#b91c1c', borderColor: '#fca5a5' }}
+              title="Clean duplicate cases so only 1 primary case remains"
+            >
+              <span>🧹</span> Clean Extra Cases ({cases.length} → 1)
+            </button>
+          )}
           <button
             className="btn btn-outline"
             onClick={handleSeedDemoCase}
@@ -287,15 +329,35 @@ export default function Dashboard({ user }) {
                 <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                   Standing Auth: <strong>{c.standing_authorisation ? 'ENABLED' : 'OFF'}</strong>
                 </div>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/case/${c.id}/graph`);
-                  }}
-                >
-                  Investigate Graph →
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {cases.length > 1 && (
+                    <button
+                      className="btn btn-sm"
+                      onClick={(e) => handleDeleteCase(e, c.id)}
+                      style={{
+                        background: '#fff',
+                        border: '1px solid #fca5a5',
+                        color: '#dc2626',
+                        fontSize: '11px',
+                        padding: '4px 8px',
+                        cursor: 'pointer',
+                        borderRadius: '3px',
+                      }}
+                      title="Delete duplicate case"
+                    >
+                      Delete
+                    </button>
+                  )}
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/case/${c.id}/graph`);
+                    }}
+                  >
+                    Investigate Graph →
+                  </button>
+                </div>
               </div>
             </div>
           ))}

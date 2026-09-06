@@ -51,6 +51,8 @@ export const casesAPI = {
   list: () => api.get('/api/cases'),
   get: (id) => api.get(`/api/cases/${id}`),
   create: (data) => api.post('/api/cases', data),
+  delete: (id) => api.delete(`/api/cases/${id}`),
+  resetClean: () => api.post('/api/cases/reset-clean'),
   toggleStandingAuth: (id) => api.patch(`/api/cases/${id}/standing-auth`),
 };
 

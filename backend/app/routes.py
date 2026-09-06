@@ -211,8 +211,33 @@ def create_case(
     return case
 
 
+def _delete_case(case_id: str, db: Session):
+    """Cleanly purge a case and all associated child records."""
+    db.query(PatternAlert).filter(PatternAlert.case_id == case_id).delete()
+    db.query(ApprovalRequest).filter(ApprovalRequest.case_id == case_id).delete()
+    db.query(Event).filter(Event.case_id == case_id).delete()
+    db.query(LocationPing).filter(LocationPing.case_id == case_id).delete()
+    db.query(Edge).filter(Edge.case_id == case_id).delete()
+    db.query(CDRRecord).filter(CDRRecord.case_id == case_id).delete()
+    db.query(TransactionRecord).filter(TransactionRecord.case_id == case_id).delete()
+    db.query(FIRRecord).filter(FIRRecord.case_id == case_id).delete()
+    db.query(SurveillanceRecord).filter(SurveillanceRecord.case_id == case_id).delete()
+    db.query(SocialMediaRecord).filter(SocialMediaRecord.case_id == case_id).delete()
+    db.query(CriminalHistoryRecord).filter(CriminalHistoryRecord.case_id == case_id).delete()
+    db.query(Person).filter(Person.case_id == case_id).delete()
+    db.query(CaseInvestigator).filter(CaseInvestigator.case_id == case_id).delete()
+    db.query(Case).filter(Case.id == case_id).delete()
+    db.commit()
+
+
 @router.get("/api/cases", response_model=List[CaseOut])
 def list_cases(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Automatically clean up duplicate demo cases on visit/login so only 1 primary case is retained
+    garuda_cases = db.query(Case).filter(Case.title.like("%Operation Garuda%")).order_by(Case.created_at.asc()).all()
+    if len(garuda_cases) > 1:
+        for extra in garuda_cases[1:]:
+            _delete_case(extra.id, db)
+
     if current_user.role in ("admin", "senior_authority"):
         return db.query(Case).all()
     case_ids = [ci.case_id for ci in db.query(CaseInvestigator).filter(
@@ -222,6 +247,25 @@ def list_cases(current_user: User = Depends(get_current_user), db: Session = Dep
     if not cases:
         return db.query(Case).all()
     return cases
+
+
+@router.delete("/api/cases/{case_id}")
+def delete_case(case_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    case = db.query(Case).filter(Case.id == case_id).first()
+    if not case:
+        raise HTTPException(status_code=404, detail="Case not found")
+    _delete_case(case_id, db)
+    return {"status": "success", "message": f"Case {case_id} deleted"}
+
+
+@router.post("/api/cases/reset-clean")
+def reset_clean_cases(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Keep only the first primary demo case and remove all duplicates/extras."""
+    all_cases = db.query(Case).order_by(Case.created_at.asc()).all()
+    if len(all_cases) > 1:
+        for extra in all_cases[1:]:
+            _delete_case(extra.id, db)
+    return {"status": "success", "remaining_cases": db.query(Case).count()}
 
 
 @router.get("/api/cases/{case_id}", response_model=CaseOut)
