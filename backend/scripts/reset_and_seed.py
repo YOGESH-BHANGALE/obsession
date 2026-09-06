@@ -241,6 +241,24 @@ def reset_and_seed():
         ))
     db.commit()
 
+    # 8b. Generate and persist baseline predictive forecasts
+    from app.forecasting import generate_predictions
+    preds = generate_predictions(case_id, db)
+    for pred in preds:
+        ts = datetime.fromisoformat(pred["timestamp"]) if isinstance(pred.get("timestamp"), str) else pred.get("timestamp")
+        db.add(Event(
+            case_id=case_id,
+            event_name=pred.get("title", "Projected Intelligence Event"),
+            timestamp=ts,
+            event_type="predicted_event",
+            description=pred.get("description", ""),
+            linked_entity_ids=pred.get("linked_entity_ids", []),
+            is_predicted=True,
+            source_refs=pred,
+        ))
+    db.commit()
+    print(f"[OK] Generated {len(preds)} baseline predictive future timeline events.")
+
     print("\n" + "=" * 60)
     print(f"PATTERN DETECTION COMPLETE: {len(alerts)} ALERTS GENERATED")
     print("=" * 60)

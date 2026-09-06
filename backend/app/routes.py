@@ -599,6 +599,24 @@ def seed_demo_case(
             evidence_data=alert.get("evidence_data", {}),
         ))
 
+    # 6. Pre-generate baseline predictive forecasts
+    try:
+        from app.forecasting import generate_predictions
+        preds = generate_predictions(case_id, db)
+        for pred in preds:
+            db.add(Event(
+                case_id=case_id,
+                event_name=pred.get("title", "Projected Intelligence Event"),
+                timestamp=_parse_datetime(pred["timestamp"]),
+                event_type="predicted_event",
+                description=pred.get("description", ""),
+                linked_entity_ids=pred.get("linked_entity_ids", []),
+                is_predicted=True,
+                source_refs=pred,
+            ))
+    except Exception as err:
+        print(f"Notice generating predictions during seed: {err}")
+
     clean_result = {k: v for k, v in result.items() if k != "person_cache"}
     if current_user:
         db.add(AuditLog(
@@ -1609,11 +1627,57 @@ def get_predicted_timeline(case_id: str, current_user: User = Depends(get_curren
     events = db.query(Event).filter(
         Event.case_id == case_id, Event.is_predicted == True
     ).order_by(Event.timestamp).all()
-    return [{
-        "id": e.id, "timestamp": e.timestamp.isoformat() if e.timestamp else "",
-        "event_type": e.event_type, "description": e.description,
-        "linked_entity_ids": e.linked_entity_ids,
-    } for e in events]
+
+    # If no predictions exist yet, generate them automatically so the investigator is never presented with an empty view
+    if not events:
+        try:
+            from app.forecasting import generate_predictions
+            preds = generate_predictions(case_id, db)
+            for pred in preds:
+                ev = Event(
+                    case_id=case_id,
+                    event_name=pred.get("title", "Projected Intelligence Event"),
+                    timestamp=_parse_datetime(pred["timestamp"]),
+                    event_type="predicted_event",
+                    description=pred.get("description", ""),
+                    linked_entity_ids=pred.get("linked_entity_ids", []),
+                    is_predicted=True,
+                    source_refs=pred,
+                )
+                db.add(ev)
+            db.commit()
+            events = db.query(Event).filter(
+                Event.case_id == case_id, Event.is_predicted == True
+            ).order_by(Event.timestamp).all()
+        except Exception as e:
+            print(f"Notice auto-generating predictions in get_predicted_timeline: {e}")
+
+    results = []
+    for e in events:
+        meta = e.source_refs if isinstance(e.source_refs, dict) else {}
+        if isinstance(e.source_refs, list) and e.source_refs:
+            meta = e.source_refs[0] if isinstance(e.source_refs[0], dict) else {}
+
+        results.append({
+            "id": e.id,
+            "timestamp": e.timestamp.isoformat() if e.timestamp else "",
+            "event_type": e.event_type,
+            "description": e.description,
+            "linked_entity_ids": e.linked_entity_ids or [],
+            "title": meta.get("title") or e.event_name or "Projected Intelligence Event",
+            "category": meta.get("category", "telecom"),
+            "trend": meta.get("trend", "increasing"),
+            "confidence": meta.get("confidence", 0.8),
+            "days_ahead": meta.get("days_ahead", "+3 Days"),
+            "recommendation": meta.get("recommendation", ""),
+            "involved_persons": meta.get("involved_persons", []),
+            "city": meta.get("city", ""),
+            "predicted_lat": meta.get("predicted_lat"),
+            "predicted_lng": meta.get("predicted_lng"),
+            "estimated_amount": meta.get("estimated_amount"),
+            "evidence_type": meta.get("evidence_type", ""),
+        })
+    return results
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -1835,17 +1899,25 @@ def list_custom_rules(case_id: str, current_user: User = Depends(get_current_use
 def run_forecast(case_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Run predictive forecasting on communication/transaction trends."""
     from app.forecasting import generate_predictions
+
+    # Purge old predicted events to avoid duplication
+    db.query(Event).filter(
+        Event.case_id == case_id, Event.is_predicted == True
+    ).delete(synchronize_session=False)
+
     predictions = generate_predictions(case_id, db)
 
-    # Save predicted events
+    # Save fresh predicted events with complete metadata
     for pred in predictions:
         db.add(Event(
             case_id=case_id,
-            timestamp=pred["timestamp"],
+            event_name=pred.get("title", "Projected Intelligence Event"),
+            timestamp=_parse_datetime(pred["timestamp"]),
             event_type="predicted_event",
-            description=pred["description"],
+            description=pred.get("description", ""),
             linked_entity_ids=pred.get("linked_entity_ids", []),
             is_predicted=True,
+            source_refs=pred,
         ))
 
     db.commit()
