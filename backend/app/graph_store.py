@@ -67,6 +67,16 @@ class NetworkXGraphStore(GraphStoreBase):
                 self._graphs[case_id] = nx.Graph()
         return self._graphs[case_id]
 
+    def reset(self, case_id: str):
+        """Reset and wipe clean the graph for a case."""
+        self._graphs[case_id] = nx.Graph()
+        graph_file = self._data_dir / f"{case_id}.gpickle"
+        if graph_file.exists():
+            try:
+                graph_file.unlink()
+            except Exception:
+                pass
+
     def add_person_node(self, case_id: str, person_id: str, attrs: dict):
         G = self._get_or_create(case_id)
         attrs["node_type"] = "person"
@@ -79,15 +89,16 @@ class NetworkXGraphStore(GraphStoreBase):
 
     def add_edge(self, case_id: str, source_id: str, target_id: str, edge_type: str, attrs: dict):
         G = self._get_or_create(case_id)
-        key = f"{source_id}-{target_id}-{edge_type}"
         attrs["evidence_type"] = edge_type
+        attrs["type"] = edge_type
         attrs["source"] = source_id
         attrs["target"] = target_id
         if G.has_edge(source_id, target_id):
             existing = G[source_id][target_id]
             if "evidence_types" not in existing:
-                existing["evidence_types"] = [existing.get("evidence_type", "UNKNOWN")]
-            existing["evidence_types"].append(edge_type)
+                existing["evidence_types"] = [existing.get("evidence_type", "CALL")]
+            if edge_type not in existing["evidence_types"]:
+                existing["evidence_types"].append(edge_type)
             existing["confidence"] = min(1.0, existing.get("confidence", 0.5) + 0.1)
             existing.update(attrs)
         else:
@@ -119,11 +130,14 @@ class NetworkXGraphStore(GraphStoreBase):
 
         edges = []
         for u, v, data in G.edges(data=True):
-            edges.append({
+            e_data = {
                 "source": u,
                 "target": v,
                 **data
-            })
+            }
+            if not e_data.get("type"):
+                e_data["type"] = e_data.get("evidence_type") or (e_data.get("evidence_types", ["CALL"])[0] if e_data.get("evidence_types") else "CALL")
+            edges.append(e_data)
 
         return {"nodes": nodes, "edges": edges}
 

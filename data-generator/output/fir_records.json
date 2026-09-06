@@ -1,38 +1,38 @@
 [
   {
-    "fir_number": "FIR-2024-MUM-0204",
-    "police_station": "Cyber Crime Police Station, Bandra-Kurla Complex (BKC), Mumbai",
-    "date": "2024-06-02T10:00:00+00:00",
-    "offence": "IPC 420 (Cheating), 120B (Criminal Conspiracy), IT Act Sec 66C & 66D (Identity Theft & Cheating by Personation)",
-    "complainant": "Chief Risk Officer, Apex Global Logistics Pvt Ltd",
-    "accused": [
+    "fir_number": "FIR-2023/1456",
+    "date": "2023-08-15T00:00:00",
+    "offence": "NDPS Act Section 21(c) \u2014 Commercial quantity narcotics possession",
+    "description": "During a routine checkpoint on NH-48 near Pune, officers intercepted a vehicle (MH12AB1234) driven by Ganesh Patil. Upon search, 2kg of contraband was recovered from a hidden compartment. Patil confessed that the consignment was meant for delivery to Arjun Reddy at a warehouse in Andheri East, Mumbai. Investigation revealed phone records linking both to Vikram Malhotra. FIR registered at Hinjewadi PS, Pune.",
+    "accused_names": [
       "Vikram Malhotra",
-      "Karan Joshi",
-      "Rohan Sharma"
+      "Arjun Reddy",
+      "Ganesh Patil"
     ],
-    "description": "Spear-phishing compromise of executive corporate email resulting in fraudulent wire transfer of INR 5,20,00,000 to mule accounts controlled by Vikram Malhotra's network."
+    "police_station": "Hinjewadi PS, Pune"
   },
   {
-    "fir_number": "FIR-2022-DEL-0789",
-    "police_station": "Special Cell, Cyber Highway Cyber Crime Unit, New Delhi",
-    "date": "2023-06-02T10:00:00+00:00",
-    "offence": "IPC 419, 420, 468, 471, IT Act 66D",
-    "complainant": "Cyber Crime Cell Suo Motu",
-    "accused": [
-      "Vikram Malhotra",
-      "Pooja Nair"
+    "fir_number": "FIR-2024/0234",
+    "date": "2024-03-22T00:00:00",
+    "offence": "IPC 420 (Cheating) + Prevention of Money Laundering Act",
+    "description": "Complaint by State Bank of India regarding suspicious transactions totaling \u20b92.5 crore routed through shell companies linked to Deepak Yadav and Farah Sheikh. Multiple benami accounts identified. Trail leads to real estate purchases in Noida and Gurgaon. Imran Ali named as the money courier who made cash deposits at various branches across Delhi NCR.",
+    "accused_names": [
+      "Deepak Yadav",
+      "Farah Sheikh",
+      "Imran Ali"
     ],
-    "description": "Cross-border call-center scam and hawala laundering ring operating across NCR and Maharashtra."
+    "police_station": "Economic Offences Wing, Delhi"
   },
   {
-    "fir_number": "FIR-2024-BLR-0312",
-    "police_station": "CID Cyber Crime Police Station, Bengaluru",
-    "date": "2024-03-03T10:00:00+00:00",
-    "offence": "IT Act Sec 43, 66 (Hacking & Malware Distribution)",
-    "complainant": "National Critical Information Infrastructure Protection Centre (NCIIPC)",
-    "accused": [
-      "Amit Patel"
+    "fir_number": "FIR-2024/0567",
+    "date": "2024-07-10T00:00:00",
+    "offence": "Arms Act Section 25 \u2014 Illegal possession of firearms",
+    "description": "Acting on intelligence, Special Task Force raided a farmhouse in Mehrauli, Delhi. Mohammed Farooq was apprehended with 3 unlicensed pistols and ammunition. During interrogation, Farooq revealed a supply chain involving Qadir Hassan (procurement) and Harpreet Singh (logistics). Links to Vikram Malhotra's network established through call records and financial transactions.",
+    "accused_names": [
+      "Mohammed Farooq",
+      "Qadir Hassan",
+      "Harpreet Singh"
     ],
-    "description": "Hosting bulletproof command-and-control (C2) domains and credential harvester portals used in corporate attacks."
+    "police_station": "STF, Delhi"
   }
 ]

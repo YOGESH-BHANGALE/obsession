@@ -1,27 +1,70 @@
 [
   {
     "person_name": "Vikram Malhotra",
-    "shared_case_ref": "CASE-2022-DEL-0789",
-    "offence": "Organized Cyber Fraud & Money Laundering syndicate",
+    "shared_case_ref": "CASE-2019-MUM-0123",
+    "offence": "Extortion and Intimidation",
+    "conviction_date": "2020-03-15T00:00:00",
+    "sentence": "3 years imprisonment (released on parole)",
     "co_accused": [
-      "Pooja Nair"
-    ],
-    "sentence": "Chargesheet filed, currently on conditional high-court bail"
+      "Arjun Reddy"
+    ]
   },
   {
-    "person_name": "Pooja Nair",
-    "shared_case_ref": "CASE-2022-DEL-0789",
-    "offence": "Facilitating mule bank accounts & shell companies",
+    "person_name": "Arjun Reddy",
+    "shared_case_ref": "CASE-2019-MUM-0123",
+    "offence": "Extortion and Intimidation",
+    "conviction_date": "2020-03-15T00:00:00",
+    "sentence": "2 years imprisonment",
     "co_accused": [
       "Vikram Malhotra"
-    ],
-    "sentence": "Chargesheeted under IPC 420/120B"
+    ]
   },
   {
-    "person_name": "Rohan Sharma",
-    "shared_case_ref": "CRIME-MUM-2021-884",
-    "offence": "Illegal Hawala transfers & Benami account operation",
-    "co_accused": [],
-    "sentence": "Arrested in 2021, convicted 18 months"
+    "person_name": "Ganesh Patil",
+    "shared_case_ref": "CASE-2021-PUN-0456",
+    "offence": "Drug trafficking",
+    "conviction_date": "2022-01-20T00:00:00",
+    "sentence": "5 years imprisonment (appeal pending)",
+    "co_accused": [
+      "Imran Ali"
+    ]
+  },
+  {
+    "person_name": "Imran Ali",
+    "shared_case_ref": "CASE-2021-PUN-0456",
+    "offence": "Drug trafficking",
+    "conviction_date": "2022-01-20T00:00:00",
+    "sentence": "4 years imprisonment",
+    "co_accused": [
+      "Ganesh Patil"
+    ]
+  },
+  {
+    "person_name": "Mohammed Farooq",
+    "shared_case_ref": "CASE-2022-DEL-0789",
+    "offence": "Illegal arms possession",
+    "conviction_date": "2023-06-10T00:00:00",
+    "sentence": "Under trial",
+    "co_accused": [
+      "Qadir Hassan"
+    ]
+  },
+  {
+    "person_name": "Qadir Hassan",
+    "shared_case_ref": "CASE-2022-DEL-0789",
+    "offence": "Arms supply chain",
+    "conviction_date": null,
+    "sentence": "Absconding",
+    "co_accused": [
+      "Mohammed Farooq"
+    ]
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "shared_case_ref": "CASE-2022-DEL-0789",
+    "offence": "Conspiracy \u2014 linked to arms network",
+    "conviction_date": null,
+    "sentence": "Under investigation",
+    "co_accused": []
   }
 ]

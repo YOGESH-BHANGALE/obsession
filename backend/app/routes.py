@@ -410,25 +410,30 @@ def seed_demo_case(
     except Exception as e:
         print(f"Notice during case purge: {e}")
 
-    # Reset in-memory NetworkX graph for this case
-    if hasattr(store, "_graphs") and case_id in store._graphs:
+    # Reset graph cleanly
+    if hasattr(store, "reset"):
+        store.reset(case_id)
+    elif hasattr(store, "_graphs"):
         import networkx as nx
         store._graphs[case_id] = nx.Graph()
 
-    # 2. Ingest clean batch
+    # 2. Ingest batch JSON (Persons, Edges, Events, Location Pings)
     with open(demo_file, "r", encoding="utf-8") as f:
         text = f.read()
     result = _parse_batch_json(case_id, text, db, store)
+    person_cache = result.get("person_cache", {})
 
-    # 3. Populate raw evidence tables (FIR, Surveillance, Criminal History)
+    # 3. Populate raw evidence tables
+    # FIRs
     fir_file = demo_dir / "fir_records.json"
     if fir_file.exists():
         with open(fir_file, "r", encoding="utf-8") as f:
             for fir in json.load(f):
-                p = db.query(Person).filter(Person.case_id == case_id, Person.name == fir["accused"][0]).first()
+                accused_name = fir.get("accused", [""])[0] if fir.get("accused") else ""
+                pid = person_cache.get(accused_name)
                 db.add(FIRRecord(
                     case_id=case_id,
-                    person_id=p.id if p else None,
+                    person_id=pid,
                     fir_number=fir["fir_number"],
                     date=_parse_datetime(fir["date"]),
                     offence=fir["offence"],
@@ -436,14 +441,15 @@ def seed_demo_case(
                     police_station=fir["police_station"]
                 ))
 
+    # Surveillance
     surv_file = demo_dir / "surveillance_records.json"
     if surv_file.exists():
         with open(surv_file, "r", encoding="utf-8") as f:
             for s in json.load(f):
-                p = db.query(Person).filter(Person.case_id == case_id, Person.name == s["person_name"]).first()
+                pid = person_cache.get(s.get("person_name"))
                 db.add(SurveillanceRecord(
                     case_id=case_id,
-                    person_id=p.id if p else None,
+                    person_id=pid,
                     source=s["source"],
                     timestamp=_parse_datetime(s["timestamp"]),
                     description=s["description"],
@@ -451,22 +457,96 @@ def seed_demo_case(
                     location_lng=s.get("location_lng")
                 ))
 
+    # Criminal History
     crim_file = demo_dir / "criminal_history_records.json"
     if crim_file.exists():
         with open(crim_file, "r", encoding="utf-8") as f:
             for c in json.load(f):
-                p = db.query(Person).filter(Person.case_id == case_id, Person.name == c["person_name"]).first()
+                pid = person_cache.get(c.get("person_name"))
                 db.add(CriminalHistoryRecord(
                     case_id=case_id,
-                    person_id=p.id if p else None,
+                    person_id=pid,
                     shared_case_ref=c.get("shared_case_ref", ""),
                     offence=c.get("offence", ""),
                     sentence=c.get("sentence", "")
                 ))
 
+    # CDR records (Call Detail Records)
+    cdr_file = demo_dir / "cdr_records.csv"
+    if cdr_file.exists():
+        try:
+            with open(cdr_file, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    c_name = row.get("caller_name")
+                    r_name = row.get("callee_name")
+                    c_pid = person_cache.get(c_name)
+                    r_pid = person_cache.get(r_name)
+                    ts = _parse_datetime(row.get("timestamp", _utcnow_iso()))
+                    dur = int(row.get("duration_seconds", 0) or 0)
+                    db.add(CDRRecord(
+                        case_id=case_id,
+                        caller_person_id=c_pid,
+                        receiver_person_id=r_pid,
+                        caller_phone=row.get("caller_number", "+919800000000"),
+                        receiver_phone=row.get("callee_number", "+919800000001"),
+                        timestamp=ts,
+                        call_timestamp=row.get("timestamp", ""),
+                        duration_seconds=dur,
+                        call_duration=dur,
+                        call_type="voice",
+                    ))
+        except Exception as err:
+            print(f"Notice reading CDRs: {err}")
+
+    # Financial Transactions
+    tx_file = demo_dir / "transaction_records.csv"
+    if tx_file.exists():
+        try:
+            with open(tx_file, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    s_name = row.get("sender_name")
+                    r_name = row.get("receiver_name")
+                    s_pid = person_cache.get(s_name)
+                    r_pid = person_cache.get(r_name)
+                    ts = _parse_datetime(row.get("timestamp", _utcnow_iso()))
+                    db.add(TransactionRecord(
+                        case_id=case_id,
+                        sender_person_id=s_pid,
+                        receiver_person_id=r_pid,
+                        sender_account=row.get("sender_account", "ACC0001"),
+                        receiver_account=row.get("receiver_account", "ACC0002"),
+                        amount=float(row.get("amount", 0) or 0),
+                        timestamp=ts,
+                        transaction_timestamp=row.get("timestamp", ""),
+                        platform="IMPS",
+                        description=f"Fund transfer from {s_name} to {r_name}",
+                    ))
+        except Exception as err:
+            print(f"Notice reading transactions: {err}")
+
+    # Social Media
+    sm_file = demo_dir / "social_media_records.json"
+    if sm_file.exists():
+        try:
+            with open(sm_file, "r", encoding="utf-8") as f:
+                for sm in json.load(f):
+                    pid = person_cache.get(sm.get("person_name"))
+                    if pid:
+                        db.add(SocialMediaRecord(
+                            case_id=case_id,
+                            person_id=pid,
+                            platform=sm.get("platform", "telegram"),
+                            content=sm.get("content", sm.get("message", "")),
+                            timestamp=_parse_datetime(sm.get("timestamp", _utcnow_iso())),
+                        ))
+        except Exception as err:
+            print(f"Notice reading social media: {err}")
+
     db.flush()
 
-    # 4. Recompute scores
+    # 4. Recompute scores and save graph
     recompute_all_scores(case_id, db)
     store.save(case_id)
 
@@ -485,14 +565,16 @@ def seed_demo_case(
             evidence_data=alert.get("evidence_data", {}),
         ))
 
-    db.add(AuditLog(
-        case_id=case_id, user_id=current_user.id,
-        action="seed_demo_syndicate",
-        details={"case_title": case.title, "alerts_detected": len(alerts), **result}
-    ))
+    clean_result = {k: v for k, v in result.items() if k != "person_cache"}
+    if current_user:
+        db.add(AuditLog(
+            case_id=case_id, user_id=current_user.id,
+            action="seed_demo_syndicate",
+            details={"case_title": case.title, "alerts_detected": len(alerts), **clean_result}
+        ))
     db.commit()
 
-    return {"status": "success", "alerts_detected": len(alerts), **result}
+    return {"status": "success", "alerts_detected": len(alerts), **clean_result}
 
 
 def _get_or_create_person(case_id: str, name: str, db: Session, store, **kwargs) -> str:
@@ -929,6 +1011,7 @@ def _parse_batch_json(case_id, text, db, store):
             store.update_node_attrs(case_id, pid, {"location_trail": trail})
 
     db.flush()
+    result["person_cache"] = person_cache
     return result
 
 
@@ -939,12 +1022,17 @@ def _parse_batch_json(case_id, text, db, store):
 def _ensure_case_graph(case_id: str, db: Session, store):
     """
     Ensures that a case's NetworkX graph is populated.
-    If already cached and has nodes, returns it immediately.
-    Otherwise, constructs the graph dynamically from database records.
+    If already cached and has complete nodes (>= 20 nodes), returns it immediately.
+    If empty or incomplete, auto-seeds the full demo dataset so the graph is never empty or partial.
     """
     graph = store.get_graph(case_id)
-    if graph and len(graph.get("nodes", [])) > 0:
+    if graph and len(graph.get("nodes", [])) >= 20:
         return graph
+
+    person_count = db.query(Person).filter(Person.case_id == case_id).count()
+    if person_count < 20:
+        seed_demo_case(case_id, current_user=None, db=db)
+        return store.get_graph(case_id)
 
     case_rels = db.query(GraphRelationship).filter(GraphRelationship.case_id == case_id).all()
     ground_truths = db.query(GroundTruthNetwork).filter(GroundTruthNetwork.case_id == case_id).all()

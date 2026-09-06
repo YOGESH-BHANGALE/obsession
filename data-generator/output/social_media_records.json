@@ -1,18 +1,98 @@
 [
   {
-    "person_name": "Karan Joshi",
+    "person_name": "Vikram Malhotra",
+    "target_person_name": "Arjun Reddy",
     "platform": "Telegram",
-    "interaction_type": "message",
-    "target_person": "Amit Patel",
-    "timestamp": "2024-06-06T14:00:00+00:00",
-    "content": "Encrypted Channel #GARUDA_ALPHA: Payload tested clean on VirusTotal. Forwarding the spoofed PDF invoice template for the corporate wire."
+    "interaction_type": "follow",
+    "content": "Business discussion detected on encrypted platform",
+    "timestamp": "2024-08-08T18:25:00"
   },
   {
-    "person_name": "Amit Patel",
+    "person_name": "Vikram Malhotra",
+    "target_person_name": "Deepak Yadav",
+    "platform": "WhatsApp",
+    "interaction_type": "post",
+    "content": "Business discussion detected on encrypted platform",
+    "timestamp": "2024-06-10T06:14:00"
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "target_person_name": "Farah Sheikh",
+    "platform": "Facebook",
+    "interaction_type": "follow",
+    "content": "Business discussion detected on encrypted platform",
+    "timestamp": "2024-07-31T12:13:00"
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "target_person_name": "Kiran Desai",
+    "platform": "WhatsApp",
+    "interaction_type": "message",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-09-04T08:35:00"
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "target_person_name": "Jaya Sharma",
+    "platform": "Instagram",
+    "interaction_type": "message",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-06-22T09:28:00"
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "target_person_name": "Mohammed Farooq",
+    "platform": "WhatsApp",
+    "interaction_type": "like",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-07-29T18:02:00"
+  },
+  {
+    "person_name": "Deepak Yadav",
+    "target_person_name": "Neha Gupta",
+    "platform": "Twitter",
+    "interaction_type": "like",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-09-24T14:27:00"
+  },
+  {
+    "person_name": "Deepak Yadav",
+    "target_person_name": "Kiran Desai",
+    "platform": "Telegram",
+    "interaction_type": "like",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-10-06T10:17:00"
+  },
+  {
+    "person_name": "Deepak Yadav",
+    "target_person_name": "Mohammed Farooq",
     "platform": "Telegram",
     "interaction_type": "message",
-    "target_person": "Karan Joshi",
-    "timestamp": "2024-06-06T14:15:00+00:00",
-    "content": "TOR relay is operational at 185.220.101.42. Domain resolves to c2-vault-relay.is. Standing by for payout confirmation."
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-07-16T14:14:00"
+  },
+  {
+    "person_name": "Farah Sheikh",
+    "target_person_name": "Kiran Desai",
+    "platform": "Twitter",
+    "interaction_type": "message",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-08-15T16:32:00"
+  },
+  {
+    "person_name": "Farah Sheikh",
+    "target_person_name": "Lakshmi Nair",
+    "platform": "WhatsApp",
+    "interaction_type": "post",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-06-21T08:59:00"
+  },
+  {
+    "person_name": "Farah Sheikh",
+    "target_person_name": "Ganesh Patil",
+    "platform": "Facebook",
+    "interaction_type": "message",
+    "content": "Regular social media interaction observed",
+    "timestamp": "2024-07-01T02:23:00"
   }
 ]

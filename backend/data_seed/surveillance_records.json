@@ -1,18 +1,272 @@
 [
   {
     "person_name": "Vikram Malhotra",
-    "source": "Special Intelligence Bureau (SIB) Field Unit",
-    "timestamp": "2024-06-06T22:00:00+00:00",
-    "location_lat": 19.076,
-    "location_lng": 72.8777,
-    "description": "Target Vikram Malhotra observed meeting Devendra Kumar in the lobby caf\u00e9 of Grand Hyatt Mumbai. Target handed over a sealed metallic envelope and encrypted device before departing in black Toyota Fortuner (MH01-CV-9999)."
+    "source": "field_surveillance",
+    "timestamp": "2024-08-31T09:37:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.070221,
+    "lng": 72.919118,
+    "observed_with": [
+      "Arjun Reddy",
+      "Farah Sheikh"
+    ]
   },
   {
-    "person_name": "Karan Joshi",
-    "source": "State Anti-Corruption & Economic Offences Wing",
-    "timestamp": "2024-06-06T19:30:00+00:00",
-    "location_lat": 18.9256,
-    "location_lng": 72.8242,
-    "description": "Karan Joshi spotted conducting quick cash handoff with Sameer Merchant's courier outside Express Towers, Nariman Point."
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-08-14T11:00:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.073254,
+    "lng": 72.887009,
+    "observed_with": [
+      "Farah Sheikh",
+      "Arjun Reddy"
+    ]
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-10-22T01:27:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.036119,
+    "lng": 72.87834,
+    "observed_with": [
+      "Arjun Reddy"
+    ]
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-07-22T02:21:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.118929,
+    "lng": 72.890363,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-09-28T19:44:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.091123,
+    "lng": 72.895248,
+    "observed_with": [
+      "Farah Sheikh"
+    ]
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-08-16T13:21:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.081955,
+    "lng": 72.862895,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-06-11T15:14:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.040401,
+    "lng": 72.911583,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-09-28T19:13:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.088502,
+    "lng": 72.895107,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-08-24T23:24:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.074265,
+    "lng": 72.901876,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "field_surveillance",
+    "timestamp": "2024-06-02T11:00:00",
+    "description": "Subject observed at location in Mumbai. Arrived in a white Toyota Fortuner (MH02CD5678).",
+    "lat": 19.067019,
+    "lng": 72.907077,
+    "observed_with": []
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "source": "mobile_tower",
+    "timestamp": "2024-11-20T14:00:00",
+    "description": "Mobile tower ping detected in Mumbai",
+    "lat": 19.076,
+    "lng": 72.8777,
+    "observed_with": []
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "source": "mobile_tower",
+    "timestamp": "2024-11-20T15:00:00",
+    "description": "Mobile tower ping detected in Chennai \u2014 impossible travel speed",
+    "lat": 13.0827,
+    "lng": 80.2707,
+    "observed_with": []
+  },
+  {
+    "person_name": "Vikram Malhotra",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.517187,
+    "lng": 73.856871,
+    "observed_with": []
+  },
+  {
+    "person_name": "Arjun Reddy",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.51983,
+    "lng": 73.859424,
+    "observed_with": []
+  },
+  {
+    "person_name": "Deepak Yadav",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.518363,
+    "lng": 73.859762,
+    "observed_with": []
+  },
+  {
+    "person_name": "Farah Sheikh",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.517494,
+    "lng": 73.856026,
+    "observed_with": []
+  },
+  {
+    "person_name": "Ganesh Patil",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.517601,
+    "lng": 73.855907,
+    "observed_with": []
+  },
+  {
+    "person_name": "Harpreet Singh",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.517359,
+    "lng": 73.859072,
+    "observed_with": []
+  },
+  {
+    "person_name": "Imran Ali",
+    "source": "cctv_analysis",
+    "timestamp": "2024-11-18T22:30:00",
+    "description": "Subject identified at restaurant in Koregaon Park, Pune",
+    "lat": 18.517747,
+    "lng": 73.85555,
+    "observed_with": []
+  },
+  {
+    "person_name": "Deepak Yadav",
+    "source": "field_surveillance",
+    "timestamp": "2024-11-19T10:00:00",
+    "description": "Subject observed making a phone call near Juhu Beach, Mumbai",
+    "lat": 19.0988,
+    "lng": 72.8265,
+    "observed_with": [
+      "Jaya Sharma"
+    ]
+  },
+  {
+    "person_name": "Ganesh Patil",
+    "source": "field_surveillance",
+    "timestamp": "2024-11-21T04:24:00",
+    "description": "Subject observed in Bangalore",
+    "lat": 12.990134,
+    "lng": 77.616797,
+    "observed_with": []
+  },
+  {
+    "person_name": "Harpreet Singh",
+    "source": "field_surveillance",
+    "timestamp": "2024-09-03T11:42:00",
+    "description": "Subject observed in Kolkata",
+    "lat": 22.596174,
+    "lng": 88.353363,
+    "observed_with": []
+  },
+  {
+    "person_name": "Imran Ali",
+    "source": "cctv_analysis",
+    "timestamp": "2024-06-17T03:09:00",
+    "description": "Subject observed in Lucknow",
+    "lat": 26.872489,
+    "lng": 80.973102,
+    "observed_with": []
+  },
+  {
+    "person_name": "Jaya Sharma",
+    "source": "cctv_analysis",
+    "timestamp": "2024-08-21T19:27:00",
+    "description": "Subject observed in Hyderabad",
+    "lat": 17.368334,
+    "lng": 78.480116,
+    "observed_with": []
+  },
+  {
+    "person_name": "Kiran Desai",
+    "source": "informant_report",
+    "timestamp": "2024-08-15T04:20:00",
+    "description": "Subject observed in Mumbai",
+    "lat": 19.090221,
+    "lng": 72.88242,
+    "observed_with": []
+  },
+  {
+    "person_name": "Lakshmi Nair",
+    "source": "field_surveillance",
+    "timestamp": "2024-10-09T18:56:00",
+    "description": "Subject observed in Mumbai",
+    "lat": 19.082998,
+    "lng": 72.865812,
+    "observed_with": [
+      "Harpreet Singh"
+    ]
+  },
+  {
+    "person_name": "Mohammed Farooq",
+    "source": "informant_report",
+    "timestamp": "2024-06-17T05:32:00",
+    "description": "Subject observed in Delhi",
+    "lat": 28.629287,
+    "lng": 77.22473,
+    "observed_with": [
+      "Neha Gupta"
+    ]
+  },
+  {
+    "person_name": "Neha Gupta",
+    "source": "field_surveillance",
+    "timestamp": "2024-08-22T22:23:00",
+    "description": "Subject observed in Lucknow",
+    "lat": 26.839904,
+    "lng": 80.947221,
+    "observed_with": [
+      "Lakshmi Nair"
+    ]
   }
 ]
