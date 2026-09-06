@@ -2,6 +2,15 @@
 Main FastAPI Application — Criminal Network Analysis Platform
 Run: uvicorn app.main:app --reload --port 8000
 """
+import os
+import sys
+from pathlib import Path
+
+# Ensure backend directory is in sys.path
+_backend_dir = str(Path(__file__).resolve().parent.parent)
+if _backend_dir not in sys.path:
+    sys.path.insert(0, _backend_dir)
+
 import asyncio
 import json
 import datetime
@@ -101,9 +110,18 @@ app = FastAPI(
 
 # CORS
 server_config = get_server_config()
+cors_env = os.environ.get("CORS_ORIGINS")
+configured_origins = list(server_config.get("cors_origins", ["http://localhost:5173", "http://127.0.0.1:5173"]))
+if cors_env:
+    for origin in cors_env.split(","):
+        trimmed = origin.strip()
+        if trimmed and trimmed not in configured_origins:
+            configured_origins.append(trimmed)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=server_config.get("cors_origins", ["*"]),
+    allow_origins=configured_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

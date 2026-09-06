@@ -134,12 +134,25 @@ export const investigatorAPI = {
 };
 
 // ═══════════════ WebSocket ═══════════════
+const getWsBase = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL.replace(/^http(s?):\/\//, 'ws$1://');
+  }
+  if (typeof window !== 'undefined' && window.location.host && !import.meta.env.DEV) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}`;
+  }
+  return 'ws://localhost:8000';
+};
+
 export const createGraphWebSocket = (caseId) => {
-  return new WebSocket(`ws://localhost:8000/ws/graph/${caseId}`);
+  const wsBase = getWsBase();
+  return new WebSocket(`${wsBase}/ws/graph/${caseId}`);
 };
 
 export const createLocationWebSocket = (caseId) => {
-  return new WebSocket(`ws://localhost:8000/ws/location/${caseId}`);
+  const wsBase = getWsBase();
+  return new WebSocket(`${wsBase}/ws/location/${caseId}`);
 };
 
 export default api;

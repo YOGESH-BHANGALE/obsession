@@ -11,9 +11,15 @@ def get_config() -> dict:
     """Load and cache the config.yaml file."""
     global _CONFIG
     if _CONFIG is None:
-        config_path = Path(__file__).resolve().parent.parent.parent / "config" / "config.yaml"
-        if not config_path.exists():
-            raise FileNotFoundError(f"Config file not found: {config_path}")
+        candidate_paths = [
+            Path(__file__).resolve().parent.parent.parent / "config" / "config.yaml",
+            Path(__file__).resolve().parent.parent / "config" / "config.yaml",
+            Path.cwd() / "config" / "config.yaml",
+            Path.cwd() / "config.yaml",
+        ]
+        config_path = next((p for p in candidate_paths if p.exists()), None)
+        if not config_path:
+            raise FileNotFoundError(f"Config file not found in any candidate path: {candidate_paths}")
         with open(config_path, "r", encoding="utf-8") as f:
             _CONFIG = yaml.safe_load(f)
     return _CONFIG
