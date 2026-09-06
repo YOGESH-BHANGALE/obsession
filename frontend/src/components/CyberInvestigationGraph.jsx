@@ -118,13 +118,10 @@ export default function CyberInvestigationGraph({
       setNodes(finalNodes);
       setEdges(layoutedEdges);
 
-      // Auto-fit view only on initial load or explicit layout change
-      if (shouldFit || isInitialLayoutRef.current) {
-        isInitialLayoutRef.current = false;
-        setTimeout(() => {
-          reactFlowRef.current?.fitView({ padding: 0.18, duration: 250 });
-        }, 50);
-      }
+      // Auto-fit view whenever layout changes or initial load completes
+      setTimeout(() => {
+        reactFlowRef.current?.fitView({ padding: 0.2, duration: 250 });
+      }, 100);
     } catch (err) {
       console.error('Error running ELK layout:', err);
     } finally {
@@ -229,7 +226,47 @@ export default function CyberInvestigationGraph({
   };
 
   const handleFitView = () => {
-    reactFlowRef.current?.fitView({ padding: 0.18, duration: 250 });
+    reactFlowRef.current?.fitView({ padding: 0.2, duration: 250 });
+  };
+
+  // Interactive legend filter highlight
+  const handleHighlightByFilter = (filterKey) => {
+    let matchedNode = null;
+    setNodes((nds) =>
+      nds.map((n) => {
+        let isMatch = false;
+        if (filterKey === 'inner') {
+          isMatch = n.data?.confidenceBand === 'inner' || n.data?.isSeed;
+        } else if (filterKey === 'middle') {
+          isMatch = n.data?.confidenceBand === 'middle';
+        } else if (filterKey === 'outer') {
+          isMatch = n.data?.confidenceBand === 'outer';
+        } else if (filterKey === 'criminal') {
+          isMatch = !!n.data?.criminalHistory;
+        }
+
+        if (isMatch && !matchedNode) {
+          matchedNode = n;
+        }
+
+        return {
+          ...n,
+          selected: isMatch,
+        };
+      })
+    );
+
+    if (matchedNode) {
+      setActiveExpandedSuspect(matchedNode.id);
+      if (onSelectNode) onSelectNode(matchedNode.id);
+      if (reactFlowRef.current && matchedNode.position) {
+        reactFlowRef.current.setCenter(
+          matchedNode.position.x + 120,
+          matchedNode.position.y + 60,
+          { zoom: 1.15, duration: 300 }
+        );
+      }
+    }
   };
 
   return (
@@ -648,6 +685,9 @@ export default function CyberInvestigationGraph({
           onInit={(instance) => {
             reactFlowRef.current = instance;
             setReactFlowInstance(instance);
+            setTimeout(() => {
+              instance.fitView({ padding: 0.2, duration: 250 });
+            }, 100);
           }}
           onlyRenderVisibleElements={true}
           zoomOnScroll={true}
@@ -660,7 +700,7 @@ export default function CyberInvestigationGraph({
           minZoom={0.15}
           maxZoom={3.5}
           fitView
-          fitViewOptions={{ padding: 0.18 }}
+          fitViewOptions={{ padding: 0.2 }}
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#1E293B" gap={28} size={1.2} />
@@ -674,17 +714,41 @@ export default function CyberInvestigationGraph({
             }}
           />
           <MiniMap
+            pannable={true}
+            zoomable={true}
             nodeColor={(n) => {
               if (n.data?.isSeed) return '#FFD600';
               if (n.data?.criminalHistory) return '#EF4444';
               if (n.data?.confidenceBand === 'middle') return '#FBBF24';
-              return '#64748B';
+              if (n.data?.isSatellite) return '#38BDF8';
+              return '#60A5FA';
             }}
-            maskColor="rgba(11, 15, 25, 0.75)"
+            nodeStrokeColor="#0F172A"
+            nodeStrokeWidth={2}
+            nodeBorderRadius={4}
+            maskColor="rgba(15, 23, 42, 0.55)"
+            maskStrokeColor="#38BDF8"
+            maskStrokeWidth={2}
             style={{
-              background: '#0F172A',
-              border: '1px solid #334155',
-              borderRadius: '8px',
+              background: '#0B0F19',
+              border: '1.5px solid #38BDF8',
+              borderRadius: '10px',
+              width: 220,
+              height: 140,
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.35)',
+              cursor: 'grab',
+            }}
+            onNodeClick={(event, node) => {
+              if (node && node.id) {
+                handleNodeClick(event, node);
+                if (reactFlowRef.current) {
+                  reactFlowRef.current.setCenter(
+                    (node.position?.x || 0) + 120,
+                    (node.position?.y || 0) + 60,
+                    { zoom: 1.2, duration: 250 }
+                  );
+                }
+              }
             }}
           />
         </ReactFlow>
@@ -696,14 +760,13 @@ export default function CyberInvestigationGraph({
             bottom: '20px',
             left: '20px',
             background: 'rgba(15, 23, 42, 0.94)',
-            backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             borderRadius: '8px',
             padding: '12px 14px',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7)',
             fontSize: '11px',
-            zIndex: 10,
-            pointerEvents: 'none',
+            zIndex: 20,
+            pointerEvents: 'auto',
             maxWidth: '310px',
             color: '#E2E8F0',
           }}
@@ -717,11 +780,31 @@ export default function CyberInvestigationGraph({
               paddingBottom: '4px',
               color: '#38BDF8',
               letterSpacing: '0.4px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            Syndicate Hierarchy &amp; Zone Legend
+            <span>Syndicate Hierarchy &amp; Zone Legend</span>
+            <span style={{ fontSize: '9px', color: '#94A3B8', textTransform: 'none', fontWeight: 600 }}>Click to focus</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+
+          <div
+            onClick={() => handleHighlightByFilter('inner')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '5px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+              borderRadius: '4px',
+              transition: 'background 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            title="Click to focus on Inner Core / Mastermind"
+          >
             <div
               style={{
                 width: '12px',
@@ -729,13 +812,30 @@ export default function CyberInvestigationGraph({
                 borderRadius: '50%',
                 background: '#FFD600',
                 border: '1.5px solid #1A1A1A',
+                boxShadow: '0 0 6px rgba(255, 214, 0, 0.6)',
               }}
             />
             <span>
               <strong style={{ color: '#FFD600' }}>Inner Core / Mastermind:</strong> &gt;75% Risk (Vikram)
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+
+          <div
+            onClick={() => handleHighlightByFilter('middle')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '5px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+              borderRadius: '4px',
+              transition: 'background 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            title="Click to focus on Middle Operatives"
+          >
             <div
               style={{
                 width: '12px',
@@ -746,10 +846,26 @@ export default function CyberInvestigationGraph({
               }}
             />
             <span>
-              <strong style={{ color: '#FBBF24' }}>Middle Operatives:</strong> 40–75% (Karan, Rohan, Pooja)
+              <strong style={{ color: '#FBBF24' }}>Middle Operatives:</strong> 40–75% (Active Operatives)
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+
+          <div
+            onClick={() => handleHighlightByFilter('outer')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '5px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+              borderRadius: '4px',
+              transition: 'background 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            title="Click to focus on Outer Peripherals"
+          >
             <div
               style={{
                 width: '12px',
@@ -763,7 +879,9 @@ export default function CyberInvestigationGraph({
               <strong style={{ color: '#CBD5E1' }}>Outer Peripherals:</strong> Couriers &amp; Mule accts
             </span>
           </div>
+
           <div
+            onClick={() => handleHighlightByFilter('criminal')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -771,7 +889,14 @@ export default function CyberInvestigationGraph({
               marginTop: '6px',
               paddingTop: '6px',
               borderTop: '1px dashed rgba(255, 255, 255, 0.1)',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              borderRadius: '4px',
+              transition: 'background 0.15s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            title="Click to focus on suspects with prior FIRs"
           >
             <div
               style={{
@@ -780,6 +905,7 @@ export default function CyberInvestigationGraph({
                 borderRadius: '50%',
                 background: '#0F172A',
                 border: '2.5px solid #EF4444',
+                boxShadow: '0 0 6px rgba(239, 68, 68, 0.6)',
               }}
             />
             <span>
