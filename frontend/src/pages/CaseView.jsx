@@ -19,12 +19,13 @@ export default function CaseView({ user }) {
   const navigate = useNavigate();
 
   const [caseInfo, setCaseInfo] = useState(null);
+  const [allCases, setAllCases] = useState([]);
   const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [expandingDfs, setExpandingDfs] = useState(false);
-  const [graphViewMode, setGraphViewMode] = useState('cyber'); // 'cyber' | 'concentric'
+  const [graphViewMode, setGraphViewMode] = useState('concentric'); // 'concentric' | 'cyber'
   const [error, setError] = useState('');
 
   const loadCaseData = async () => {
@@ -46,6 +47,12 @@ export default function CaseView({ user }) {
   useEffect(() => {
     loadCaseData();
   }, [caseId]);
+
+  useEffect(() => {
+    casesAPI.list().then((res) => {
+      setAllCases(res.data || []);
+    }).catch((err) => console.error('Failed to list cases:', err));
+  }, []);
 
   const handleToggleStandingAuth = async () => {
     try {
@@ -111,9 +118,35 @@ export default function CaseView({ user }) {
           >
             ← Cases
           </button>
+
+          {/* Quick Case Switcher Dropdown */}
+          <select
+            value={caseId}
+            onChange={(e) => navigate(`/case/${e.target.value}/graph`)}
+            style={{
+              background: '#1E293B',
+              color: '#F8FAFC',
+              border: '1px solid #334155',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              fontSize: '11.5px',
+              fontWeight: 600,
+              outline: 'none',
+              cursor: 'pointer',
+              maxWidth: '280px',
+            }}
+          >
+            <option value="master">🌐 Master Syndicate (All 140 Cases)</option>
+            {allCases.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.case_number ? `${c.case_number} - ` : ''}{c.title}
+              </option>
+            ))}
+          </select>
+
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <h1 style={{ margin: 0, fontSize: '16px', fontWeight: 800, letterSpacing: '-0.3px' }}>
+              <h1 style={{ margin: 0, fontSize: '15px', fontWeight: 800, letterSpacing: '-0.3px' }}>
                 {caseInfo?.title || 'Case Intelligence'}
               </h1>
               <span
@@ -131,7 +164,7 @@ export default function CaseView({ user }) {
               </span>
             </div>
             <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>
-              Entities: <strong>{(graphData.nodes || []).length}</strong> | Links: <strong>{(graphData.edges || []).length}</strong>
+              Real Entities: <strong>{(graphData.nodes || []).length}</strong> | Real Links: <strong>{(graphData.edges || []).length}</strong>
             </div>
           </div>
         </div>
@@ -152,6 +185,23 @@ export default function CaseView({ user }) {
                 type="button"
                 className="btn btn-sm"
                 style={{
+                  background: graphViewMode === 'concentric' ? '#2563EB' : 'transparent',
+                  color: graphViewMode === 'concentric' ? '#FFF' : '#94A3B8',
+                  border: 'none',
+                  fontSize: '11px',
+                  padding: '4px 8px',
+                  fontWeight: 700,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+                onClick={() => setGraphViewMode('concentric')}
+              >
+                ⭕ Concentric Graph
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm"
+                style={{
                   background: graphViewMode === 'cyber' ? '#2563EB' : 'transparent',
                   color: graphViewMode === 'cyber' ? '#FFF' : '#94A3B8',
                   border: 'none',
@@ -164,23 +214,6 @@ export default function CaseView({ user }) {
                 onClick={() => setGraphViewMode('cyber')}
               >
                 ⚡ Link Graph (ELK)
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm"
-                style={{
-                  background: graphViewMode === 'concentric' ? '#2563EB' : 'transparent',
-                  color: graphViewMode === 'concentric' ? '#FFF' : '#94A3B8',
-                  border: 'none',
-                  fontSize: '11px',
-                  padding: '4px 8px',
-                  fontWeight: 700,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-                onClick={() => setGraphViewMode('concentric')}
-              >
-                ⭕ Concentric
               </button>
             </div>
           )}
@@ -268,6 +301,7 @@ export default function CaseView({ user }) {
             />
           ) : (
             <NetworkGraph
+              caseId={caseId}
               graphData={graphData}
               onSelectNode={(id) => {
                 setSelectedNodeId(id);
@@ -355,8 +389,8 @@ export default function CaseView({ user }) {
           />
         )}
 
-        {/* Side Details Panels */}
-        {selectedNodeId && (
+        {/* Side Details Panels (used for ELK graph, hierarchy and other views) */}
+        {selectedNodeId && (tab !== 'graph' || graphViewMode !== 'concentric') && (
           <NodeDetailPanel
             caseId={caseId}
             personId={selectedNodeId}

@@ -6,9 +6,10 @@
  * and Brandes-Kopf node placement to eliminate overlaps and minimize edge crossings.
  */
 
-import ELK from 'elkjs/lib/elk.bundled.js';
+import ELK_BUNDLE from 'elkjs/lib/elk.bundled.js';
 import { Position } from '@xyflow/react';
 
+const ELK = ELK_BUNDLE?.default || ELK_BUNDLE;
 const elk = new ELK();
 
 /**
