@@ -18,7 +18,7 @@ from app.database import get_db
 from app.models import (
     User, Case, CaseInvestigator, Person, Edge, Event,
     CDRRecord, TransactionRecord, FIRRecord, SurveillanceRecord,
-    SocialMediaRecord, CriminalHistoryRecord, LocationPing,
+    SocialMediaRecord, CriminalHistoryRecord, LocationPing, Location,
     PatternAlert, ApprovalRequest, AuditLog, CustomRule,
     GraphRelationship, GroundTruthNetwork, PoliceReport
 )
