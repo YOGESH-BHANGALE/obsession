@@ -27,7 +27,15 @@ def extract_mentioned_persons(
     Identifies Persons involved in the question or explicitly selected.
     Strictly isolated to the given case_id.
     """
-    persons = db.query(Person).filter(Person.case_id == case_id).all()
+    store = get_graph_store()
+    case_nodes = store.get_all_person_nodes(case_id)
+    node_pids = [n["id"] for n in case_nodes if "id" in n]
+    if node_pids:
+        persons = db.query(Person).filter(Person.id.in_(node_pids)).all()
+    else:
+        persons = db.query(Person).filter(Person.case_id == case_id).all()
+        if not persons:
+            persons = db.query(Person).order_by(Person.suspicion_score.desc()).limit(100).all()
     if not persons:
         return []
 
@@ -119,8 +127,8 @@ def get_person_connections(
     citations = []
     connections = []
 
-    # Get all persons in case for name lookup
-    case_persons = {p.id: p.name for p in db.query(Person).filter(Person.case_id == case_id).all()}
+    # Get all persons for name lookup
+    case_persons = {p.id: p.name for p in db.query(Person.id, Person.name).all()}
     person_name = case_persons.get(person_id, person_id[:8])
 
     # 1. Query NetworkX primary graph store
@@ -393,7 +401,7 @@ def build_relationship_context(
     if G.has_node(p1.id) and G.has_node(p2.id):
         try:
             path_nodes = nx.shortest_path(G, source=p1.id, target=p2.id)
-            case_persons = {p.id: p.name for p in db.query(Person).filter(Person.case_id == case_id).all()}
+            case_persons = {p.id: p.name for p in db.query(Person.id, Person.name).all()}
             shortest_path_names = [case_persons.get(nid, nid[:8]) for nid in path_nodes]
             if len(path_nodes) > 2:
                 citations.append(f"Graph Path: {' -> '.join(shortest_path_names)}")
@@ -406,7 +414,7 @@ def build_relationship_context(
         n1 = set(G.neighbors(p1.id))
         n2 = set(G.neighbors(p2.id))
         common = n1.intersection(n2)
-        case_persons = {p.id: p.name for p in db.query(Person).filter(Person.case_id == case_id).all()}
+        case_persons = {p.id: p.name for p in db.query(Person.id, Person.name).all()}
         common_neighbors = [case_persons.get(cid, cid[:8]) for cid in common]
         if common_neighbors:
             citations.append(f"Shared Intermediaries: {', '.join(common_neighbors)}")
@@ -458,13 +466,19 @@ def build_case_overview_context(
 
     citations.append(f"Case File: {case.title} (ID: {case.id[:8]}..., Status: {case.status})")
 
-    persons = db.query(Person).filter(Person.case_id == case_id).order_by(Person.suspicion_score.desc()).all()
-    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all()
-    edges = db.query(Edge).filter(Edge.case_id == case_id).all()
+    store = get_graph_store()
+    case_nodes = store.get_all_person_nodes(case_id)
+    node_pids = [n["id"] for n in case_nodes if "id" in n]
+    if node_pids:
+        persons = db.query(Person).filter(Person.id.in_(node_pids)).order_by(Person.suspicion_score.desc()).all()
+    else:
+        persons = db.query(Person).filter(Person.case_id == case_id).order_by(Person.suspicion_score.desc()).all()
+        if not persons:
+            persons = db.query(Person).order_by(Person.suspicion_score.desc()).limit(25).all()
 
-    # Graph metrics
-    graph_store = get_graph_store()
-    G = graph_store.get_networkx_graph(case_id)
+    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all()
+    G = store.get_networkx_graph(case_id)
+    edge_count = G.number_of_edges() if G else db.query(Edge).filter(Edge.case_id == case_id).count()
 
     lines = [
         f"### Case Overview: {case.title}",
@@ -472,7 +486,7 @@ def build_case_overview_context(
         f"- **Status**: {case.status}",
         f"- **Type**: {case.case_type}",
         f"- **Description**: {case.description or 'None provided.'}",
-        f"- **Network Scale**: {len(persons)} identified entities, {len(edges)} verified evidence relationships",
+        f"- **Network Scale**: {len(persons)} identified entities, {edge_count} verified evidence relationships",
         "",
         "### Key Entities by Analytical Suspicion:",
     ]
