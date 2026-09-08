@@ -64,12 +64,14 @@ class NetworkXGraphStore(GraphStoreBase):
                 with open(graph_file, "rb") as f:
                     self._graphs[case_id] = pickle.load(f)
             else:
-                self._graphs[case_id] = nx.Graph()
+                import typing
+                self._graphs[case_id] = typing.cast(nx.Graph, nx.Graph())
         return self._graphs[case_id]
 
     def reset(self, case_id: str):
         """Reset and wipe clean the graph for a case."""
-        self._graphs[case_id] = nx.Graph()
+        import typing
+        self._graphs[case_id] = typing.cast(nx.Graph, nx.Graph())
         graph_file = self._data_dir / f"{case_id}.gpickle"
         if graph_file.exists():
             try:
@@ -129,7 +131,13 @@ class NetworkXGraphStore(GraphStoreBase):
             nodes.append(node_data)
 
         edges = []
-        for u, v, data in G.edges(data=True):
+        # type: ignore
+        for item in G.edges(data=True):  # type: ignore
+            u = item[0]
+            v = item[1]
+            data = item[2] if len(item) > 2 else {}
+            if not isinstance(data, dict):
+                data = {}
             e_data = {
                 "source": u,
                 "target": v,
@@ -196,19 +204,25 @@ class NetworkXGraphStore(GraphStoreBase):
         G = self._get_or_create(case_id)
         if person_id not in G:
             return []
-        return [
-            {"source": u, "target": v, **data}
-            for u, v, data in G.edges(person_id, data=True)
-        ]
+        edges = []
+        for item in G.edges(person_id, data=True): # type: ignore
+            u = item[0]
+            v = item[1]
+            data = item[2] if len(item) > 2 else {}
+            if not isinstance(data, dict):
+                data = {}
+            edges.append({"source": u, "target": v, **data})
+        return edges
 
     def compute_centrality(self, case_id: str) -> Dict[str, float]:
         G = self._get_or_create(case_id)
         if len(G) == 0:
             return {}
-        degree = nx.degree_centrality(G)
-        betweenness = nx.betweenness_centrality(G)
+        import typing
+        degree = typing.cast(Dict[str, float], nx.degree_centrality(G))
+        betweenness = typing.cast(Dict[str, float], nx.betweenness_centrality(G))
         return {
-            node: (degree.get(node, 0) + betweenness.get(node, 0)) / 2
+            node: (degree.get(node, 0.0) + betweenness.get(node, 0.0)) / 2.0
             for node in G.nodes()
         }
 
@@ -216,21 +230,22 @@ class NetworkXGraphStore(GraphStoreBase):
         G = self._get_or_create(case_id)
         if len(G) == 0:
             return {}
-        return nx.pagerank(G)
+        import typing
+        return typing.cast(Dict[str, float], nx.pagerank(G))
 
     def detect_communities(self, case_id: str) -> List[set]:
         G = self._get_or_create(case_id)
         if len(G) == 0:
             return []
         from networkx.algorithms.community import louvain_communities
-        return [set(c) for c in louvain_communities(G)]
+        return [set(c) for c in louvain_communities(G)] # type: ignore
 
     def find_cycles(self, case_id: str) -> List[list]:
         G = self._get_or_create(case_id)
         if len(G) == 0:
             return []
         try:
-            return list(nx.simple_cycles(G.to_directed()))
+            return list(nx.simple_cycles(G.to_directed())) # type: ignore
         except Exception:
             return []
 

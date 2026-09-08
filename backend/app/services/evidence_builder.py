@@ -92,7 +92,7 @@ def extract_mentioned_persons(
 
 def build_person_profile(db: Session, case_id: str, person: Person) -> Tuple[Dict[str, Any], List[str]]:
     """Builds a structured profile and evidence citations for a single Person."""
-    citations = [f"Person: {person.name} (ID: {person.id[:8]}..., Suspicion: {person.suspicion_score or 0:.2f})"]
+    citations = [f"Person: {person.name} (ID: {str(person.id)[:8]}..., Suspicion: {float(person.suspicion_score or 0.0):.2f})"]
 
     # Phone numbers
     phones = [rec.phone_number for rec in person.phone_records] if person.phone_records else (person.phone_numbers or [])
@@ -103,8 +103,8 @@ def build_person_profile(db: Session, case_id: str, person: Person) -> Tuple[Dic
     profile = {
         "id": person.id,
         "name": person.name,
-        "suspicion_score": round(person.suspicion_score or 0.0, 3),
-        "hierarchy_score": round(person.hierarchy_score or 0.0, 3),
+        "suspicion_score": round(float(person.suspicion_score or 0.0), 3),
+        "hierarchy_score": round(float(person.hierarchy_score or 0.0), 3),
         "confidence_band": person.confidence_band or "unexplored",
         "network_role": person.network_role or "Unassigned",
         "criminal_history_flag": person.criminal_history_flag,
@@ -366,17 +366,18 @@ def build_relationship_context(
 
     # Direct edges from NetworkX graph store
     direct_edge_found = False
-    edge_types = []
+    edge_types: List[str] = []
     edge_details = []
 
     if G.has_edge(p1.id, p2.id):
         direct_edge_found = True
         edata = G.get_edge_data(p1.id, p2.id) or {}
-        ev_types = edata.get("evidence_types") or [edata.get("evidence_type", "UNKNOWN")]
+        raw_ev = edata.get("evidence_types") or [edata.get("evidence_type", "UNKNOWN")]
+        ev_types = [str(t) for t in raw_ev if t is not None]
         edge_types.extend(ev_types)
         edge_details.append(edata)
-        conf = edata.get("confidence", 0.5)
-        freq = edata.get("frequency", 0)
+        conf = float(edata.get("confidence", 0.5))
+        freq = int(edata.get("frequency", 0))
         citations.append(f"Direct Edge: {p1.name} ↔ {p2.name} via {', '.join(ev_types)} (Conf: {conf:.2f}{f', {freq} calls' if freq else ''})")
 
     # Direct edges from SQL Edge table as fallback / supplement
@@ -390,32 +391,34 @@ def build_relationship_context(
 
     for e in direct_edges:
         direct_edge_found = True
-        if e.evidence_type not in edge_types:
-            edge_types.append(e.evidence_type)
+        ev_type_str = str(e.evidence_type)
+        if ev_type_str not in edge_types:
+            edge_types.append(ev_type_str)
         if e.properties:
             edge_details.append(e.properties)
-        citations.append(f"Direct Edge (SQL): {p1.name} ↔ {p2.name} via {e.evidence_type} (Confidence: {e.confidence})")
+        citations.append(f"Direct Edge (SQL): {p1.name} ↔ {p2.name} via {ev_type_str} (Confidence: {e.confidence})")
 
     # Shortest path via NetworkX
-    shortest_path_names = []
+    shortest_path_names: List[str] = []
     if G.has_node(p1.id) and G.has_node(p2.id):
         try:
-            path_nodes = nx.shortest_path(G, source=p1.id, target=p2.id)
+            raw_path = nx.shortest_path(G, source=p1.id, target=p2.id)  # type: ignore
+            path_nodes = list(raw_path) if isinstance(raw_path, (list, tuple)) else []
             case_persons = {p.id: p.name for p in db.query(Person.id, Person.name).all()}
-            shortest_path_names = [case_persons.get(nid, nid[:8]) for nid in path_nodes]
+            shortest_path_names = [str(case_persons.get(nid, str(nid)[:8])) for nid in path_nodes]
             if len(path_nodes) > 2:
                 citations.append(f"Graph Path: {' -> '.join(shortest_path_names)}")
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             shortest_path_names = []
 
     # Common neighbors
-    common_neighbors = []
+    common_neighbors: List[str] = []
     if G.has_node(p1.id) and G.has_node(p2.id):
         n1 = set(G.neighbors(p1.id))
         n2 = set(G.neighbors(p2.id))
         common = n1.intersection(n2)
         case_persons = {p.id: p.name for p in db.query(Person.id, Person.name).all()}
-        common_neighbors = [case_persons.get(cid, cid[:8]) for cid in common]
+        common_neighbors = [str(case_persons.get(cid, str(cid)[:8])) for cid in common]
         if common_neighbors:
             citations.append(f"Shared Intermediaries: {', '.join(common_neighbors)}")
 
@@ -437,8 +440,8 @@ def build_relationship_context(
         f"- **Path in Network**: {' -> '.join(shortest_path_names) if shortest_path_names else 'No path detected'}",
         f"- **Shared Associates**: {', '.join(common_neighbors) if common_neighbors else 'None identified'}",
         f"- **Profiles**:",
-        f"  * {p1.name}: Role={p1.network_role or 'Unassigned'}, Suspicion={p1.suspicion_score or 0:.2f}, Band={p1.confidence_band}",
-        f"  * {p2.name}: Role={p2.network_role or 'Unassigned'}, Suspicion={p2.suspicion_score or 0:.2f}, Band={p2.confidence_band}",
+        f"  * {p1.name}: Role={p1.network_role or 'Unassigned'}, Suspicion={float(p1.suspicion_score or 0.0):.2f}, Band={p1.confidence_band}",
+        f"  * {p2.name}: Role={p2.network_role or 'Unassigned'}, Suspicion={float(p2.suspicion_score or 0.0):.2f}, Band={p2.confidence_band}",
     ]
 
     if edge_details:
@@ -460,9 +463,19 @@ def build_case_overview_context(
     Builds context for case-wide inquiries (summaries, patterns, network overview).
     """
     citations = []
-    case = db.query(Case).filter(Case.id == case_id).first()
-    if not case:
-        return "Case not found.", []
+    if case_id == "master":
+        class DummyCase:
+            title = "Global Master Criminal Syndicate Network"
+            id = "master"
+            status = "ACTIVE"
+            case_number = "MASTER-001"
+            case_type = "Syndicate Overview"
+            description = "Cross-case master graph containing all interconnected entities."
+        case = DummyCase()
+    else:
+        case = db.query(Case).filter(Case.id == case_id).first()
+        if not case:
+            return "Case not found.", []
 
     citations.append(f"Case File: {case.title} (ID: {case.id[:8]}..., Status: {case.status})")
 
@@ -476,9 +489,9 @@ def build_case_overview_context(
         if not persons:
             persons = db.query(Person).order_by(Person.suspicion_score.desc()).limit(25).all()
 
-    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all()
+    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all() if case_id != "master" else db.query(PatternAlert).all()
     G = store.get_networkx_graph(case_id)
-    edge_count = G.number_of_edges() if G else db.query(Edge).filter(Edge.case_id == case_id).count()
+    edge_count = G.number_of_edges() if G else (db.query(Edge).count() if case_id == "master" else db.query(Edge).filter(Edge.case_id == case_id).count())
 
     lines = [
         f"### Case Overview: {case.title}",
@@ -494,10 +507,10 @@ def build_case_overview_context(
     for p in persons[:7]:
         lines.append(
             f"- **{p.name}** | Role: {p.network_role or 'Unassigned'} | "
-            f"Suspicion Score: {p.suspicion_score or 0:.3f} | Confidence Band: {p.confidence_band}"
+            f"Suspicion Score: {float(p.suspicion_score or 0.0):.3f} | Confidence Band: {p.confidence_band}"
             f"{' | Has Prior Criminal Records' if p.criminal_history_flag else ''}"
         )
-        citations.append(f"Entity: {p.name} (Suspicion: {p.suspicion_score or 0:.2f})")
+        citations.append(f"Entity: {p.name} (Suspicion: {float(p.suspicion_score or 0.0):.2f})")
 
     if alerts:
         lines.append("\n### Active Detected Pattern Alerts:")
@@ -532,9 +545,9 @@ def build_investigator_context(
     elif len(mentioned_persons) == 1:
         p = mentioned_persons[0]
         profile, p_cites = build_person_profile(db, case_id, p)
-        conns, c_cites = get_person_connections(db, case_id, p.id)
-        records, r_cites = get_person_records(db, case_id, p.id)
-        alerts, a_cites = get_person_alerts(db, case_id, p.id, p.name)
+        conns, c_cites = get_person_connections(db, case_id, str(p.id))
+        records, r_cites = get_person_records(db, case_id, str(p.id))
+        alerts, a_cites = get_person_alerts(db, case_id, str(p.id), str(p.name))
 
         citations = p_cites + c_cites + r_cites + a_cites
 

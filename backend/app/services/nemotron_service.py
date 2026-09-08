@@ -149,3 +149,76 @@ Provide an objective, evidence-grounded assessment for the investigator based on
             "model": cfg.get("model"),
             "status": "error"
         }
+
+import json
+
+def ask_investigator_stream(
+    question: str,
+    evidence_context: str,
+    citations: List[str],
+    case_title: str = ""
+):
+    """
+    Generator that streams the response from NVIDIA Nemotron using Server-Sent Events (SSE).
+    """
+    cfg = get_nemotron_config()
+    client = get_client()
+    model_name = cfg.get("model", "nvidia/nemotron-3.5-lightning-30b-a3b")
+
+    if not client:
+        yield f"data: {json.dumps({'type': 'error', 'text': 'NVIDIA API key not configured'})}\n\n"
+        return
+
+    user_prompt = f"""### ACTIVE CASE: {case_title or 'Criminal Network Investigation'}
+
+### CASE EVIDENCE CONTEXT:
+{evidence_context}
+
+---
+### INVESTIGATOR INQUIRY:
+{question}
+
+Provide an objective, evidence-grounded assessment for the investigator based only on the evidence above."""
+
+    try:
+        completion = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.2,
+            max_tokens=1024,
+            timeout=30.0,
+            stream=True
+        )
+        
+        in_thinking = False
+        
+        for chunk in completion:
+            if not chunk.choices:
+                continue
+            delta = chunk.choices[0].delta
+            if getattr(delta, 'content', None):
+                text_chunk = delta.content
+                
+                # Basic suppression of thinking blocks
+                if "<think>" in text_chunk:
+                    in_thinking = True
+                    text_chunk = text_chunk.replace("<think>", "")
+                if "</think>" in text_chunk:
+                    in_thinking = False
+                    text_chunk = text_chunk.replace("</think>", "")
+                    continue
+                    
+                if not in_thinking and text_chunk:
+                    yield f"data: {json.dumps({'type': 'chunk', 'text': text_chunk})}\n\n"
+        
+        # Send final metadata
+        yield f"data: {json.dumps({'type': 'done', 'citations': citations, 'model': model_name})}\n\n"
+
+    except openai.RateLimitError as e:
+        yield f"data: {json.dumps({'type': 'error', 'text': 'Rate limit exceeded'})}\n\n"
+    except Exception as e:
+        yield f"data: {json.dumps({'type': 'error', 'text': str(e)})}\n\n"
+

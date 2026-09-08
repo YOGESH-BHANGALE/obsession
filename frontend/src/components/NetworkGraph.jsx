@@ -2266,23 +2266,51 @@ export default function NetworkGraph({
             zIndex: 30,
             background: '#0F172A',
             color: '#FFFFFF',
-            padding: '6px 12px',
-            borderRadius: '6px',
+            padding: '8px 14px',
+            borderRadius: '8px',
             fontSize: '12px',
             fontWeight: 600,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
             transform: 'translate(-50%, -100%)',
+            border: '1px solid #334155',
             left: `${containerRef.current ? (containerRef.current.clientWidth - 290) / 2 + 20 + transform.x + hoveredNode.x * transform.k : 0}px`,
-            top: `${(containerRef.current ? containerRef.current.clientHeight / 2 + transform.y + hoveredNode.y * transform.k : 0) - hoveredNode.r * transform.k - 10}px`,
+            top: `${(containerRef.current ? containerRef.current.clientHeight / 2 + transform.y + hoveredNode.y * transform.k : 0) - hoveredNode.r * transform.k - 12}px`,
           }}
         >
-          <div>{hoveredNode.name}</div>
-          <div style={{ fontSize: '10.5px', color: '#94A3B8', fontWeight: 400 }}>
+          <div style={{ fontSize: '13px', fontWeight: 800 }}>{hoveredNode.name}</div>
+          <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 500, marginBottom: '6px' }}>
             {hoveredNode.occupation ? `${hoveredNode.occupation} • ` : ''}Suspicion: {hoveredNode.score}%
           </div>
           {hoveredNode.aadhaar_id && (
-            <div style={{ fontSize: '9.5px', color: '#38BDF8', fontFamily: 'monospace' }}>
-              {hoveredNode.aadhaar_id}
+            <div style={{ fontSize: '9.5px', color: '#38BDF8', fontFamily: 'monospace', marginBottom: '6px' }}>
+              Aadhaar: {hoveredNode.aadhaar_id}
+            </div>
+          )}
+          
+          {/* Real-time Evidence Summary inside the Hover Card */}
+          {hoveredNode.connectedSummary && (
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr', 
+              gap: '4px 8px', 
+              marginTop: '6px', 
+              paddingTop: '6px', 
+              borderTop: '1px solid #334155',
+              fontSize: '10px'
+            }}>
+              {hoveredNode.connectedSummary.firs > 0 && (
+                <div style={{ color: '#F87171' }}>📜 FIRs: {hoveredNode.connectedSummary.firs}</div>
+              )}
+              {hoveredNode.connectedSummary.accounts > 0 && (
+                <div style={{ color: '#34D399' }}>💳 Accts: {hoveredNode.connectedSummary.accounts}</div>
+              )}
+              {hoveredNode.connectedSummary.totalTxAmount > 0 && (
+                <div style={{ color: '#FBBF24', gridColumn: '1 / -1' }}>💸 Tx Amount: ₹{hoveredNode.connectedSummary.totalTxAmount.toLocaleString('en-IN')}</div>
+              )}
+              {hoveredNode.connectedSummary.totalCallDuration > 0 && (
+                <div style={{ color: '#38BDF8', gridColumn: '1 / -1' }}>📞 Call Vol: {Math.floor(hoveredNode.connectedSummary.totalCallDuration / 60)}m {hoveredNode.connectedSummary.totalCallDuration % 60}s</div>
+              )}
+              <div style={{ color: '#E2E8F0', gridColumn: '1 / -1' }}>👥 Connected Associates: {hoveredNode.connectedSummary.people}</div>
             </div>
           )}
         </div>

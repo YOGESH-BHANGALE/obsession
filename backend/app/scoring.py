@@ -153,10 +153,13 @@ def _compute_centrality(G: nx.Graph, person_id: str) -> float:
         return 0.0
 
     try:
-        degree_map: dict = dict(nx.degree_centrality(G))
-        betweenness_map: dict = dict(nx.betweenness_centrality(G))
-        degree = degree_map.get(person_id, 0)
-        betweenness = betweenness_map.get(person_id, 0)
+        if "degree_centrality" not in G.graph:
+            G.graph["degree_centrality"] = dict(nx.degree_centrality(G))
+        if "betweenness_centrality" not in G.graph:
+            G.graph["betweenness_centrality"] = dict(nx.betweenness_centrality(G))
+            
+        degree = G.graph["degree_centrality"].get(person_id, 0)
+        betweenness = G.graph["betweenness_centrality"].get(person_id, 0)
         return (degree + betweenness) / 2
     except Exception:
         return 0.0

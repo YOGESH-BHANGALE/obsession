@@ -259,18 +259,18 @@ export function buildCyberGraph(graphData, caseInfo = {}, options = {}) {
     const roleTitle = roleInfo.role;
     const badgeLabel = roleInfo.badge;
 
-    // Digital footprint embedded directly in the card
+    // Digital footprint embedded directly in the card - USE REAL DATA FIRST, THEN FALLBACK
     const phones = person.phone_numbers || [];
-    const primaryPhone = phones[0] || (known.simHops ? '3 SIMs (Hopping)' : (person.city ? `+91 (${person.city})` : '+91 98XXX XXXXX'));
+    const primaryPhone = phones[0] || (person.city ? `+91 (${person.city.substring(0,3).toUpperCase()})` : '+91 98XXX XXXXX');
     
     const digitalFootprint = {
       phone: primaryPhone,
       allPhones: phones,
-      device: known.device || `${person.occupation || 'Mobile Device'} (${person.city || 'Active Unit'})`,
-      ip: known.ip || (person.city ? `${person.city} Gateway` : 'TOR Relay Gateway'),
-      wallet: known.wallet || (person.financial_account || (roleInfo.badge.includes('MULE') || roleInfo.badge.includes('FINANCIAL') ? 'Hawala Ledger Mule A/c' : null)),
-      bank: known.bank || (roleInfo.badge.includes('MULE') ? 'Mule Account (Layering)' : null),
-      social: known.social || (person.aliases?.[0] ? `@${person.aliases[0].toLowerCase().replace(/\s+/g, '_')}` : `@${name.toLowerCase().replace(/\s+/g, '_')}`),
+      device: person.device || known.device || `${person.occupation || 'Mobile Device'} (${person.city || 'Active Unit'})`,
+      ip: person.ip || known.ip || (person.city ? `${person.city} Gateway` : 'TOR Relay Gateway'),
+      wallet: person.wallet || person.financial_account || known.wallet || (roleInfo.badge.includes('MULE') || roleInfo.badge.includes('FINANCIAL') ? 'Hawala Ledger Mule A/c' : null),
+      bank: person.bank || known.bank || (roleInfo.badge.includes('MULE') ? 'Mule Account (Layering)' : null),
+      social: person.social || known.social || (person.aliases?.[0] ? `@${person.aliases[0].toLowerCase().replace(/\s+/g, '_')}` : `@${name.toLowerCase().replace(/\s+/g, '_')}`),
       priorRecord: person.criminal_history_flag ? 'Prior Criminal FIR' : null,
       crossCases: person.cross_case_refs || [],
       aliases: person.aliases || [],
