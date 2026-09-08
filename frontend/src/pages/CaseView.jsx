@@ -303,7 +303,7 @@ export default function CaseView({ user }) {
       </nav>
 
       {/* Main View Area */}
-      <main style={{ flex: 1, position: 'relative', overflow: tab === 'graph' ? 'hidden' : 'auto', background: '#F8F9FA' }}>
+      <main style={{ flex: 1, position: 'relative', overflow: 'auto', background: '#F8F9FA' }}>
         {tab === 'graph' && (
           graphViewMode === 'cyber' ? (
             <CyberInvestigationGraph

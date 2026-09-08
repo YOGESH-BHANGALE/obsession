@@ -722,8 +722,11 @@ export default function NetworkGraph({
         userSelect: 'none',
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* ─── Top-Left Header & Real-Time Search Bar ─────────────────── */}
       <div
@@ -1775,7 +1778,7 @@ export default function NetworkGraph({
       <div
         style={{
           position: 'absolute',
-          top: '115px',
+          top: '170px',
           left: '24px',
           display: 'flex',
           flexDirection: 'column',
