@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { casesAPI, graphAPI, detectionAPI } from '../api';
+import { casesAPI, graphAPI, detectionAPI, createGraphWebSocket } from '../api';
 import NetworkGraph from '../components/NetworkGraph';
 import CyberInvestigationGraph from '../components/CyberInvestigationGraph';
 import HierarchyTree from '../components/HierarchyTree';
@@ -46,6 +46,28 @@ export default function CaseView({ user }) {
 
   useEffect(() => {
     loadCaseData();
+    
+    // Set up WebSocket for real-time graph updates
+    let ws;
+    try {
+      ws = createGraphWebSocket(caseId);
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'graph_update' && message.data) {
+            setGraphData(message.data);
+          }
+        } catch (e) {
+          console.error('Failed to parse graph websocket message:', e);
+        }
+      };
+    } catch (err) {
+      console.warn('WebSocket graph connection failed:', err);
+    }
+
+    return () => {
+      if (ws) ws.close();
+    };
   }, [caseId]);
 
   useEffect(() => {

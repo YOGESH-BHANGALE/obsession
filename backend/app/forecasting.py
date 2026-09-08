@@ -49,13 +49,18 @@ def generate_predictions(case_id: str, db_session=None) -> List[Dict]:
     # 1. Communication & Call Frequency Escalation Forecasting
     # ─────────────────────────────────────────────────────────────
     edge_candidates = []
-    for u, v, data in G.edges(data=True):
+    for item in G.edges(data=True): # type: ignore
+        u = item[0]
+        v = item[1]
+        data = item[2] if len(item) > 2 else {}
+        if not isinstance(data, dict):
+            data = {}
         freq_history = data.get("frequency_history", [])
         if len(freq_history) < min_points:
             continue
 
-        u_name = person_names.get(u, G.nodes.get(u, {}).get("name", u))
-        v_name = person_names.get(v, G.nodes.get(v, {}).get("name", v))
+        u_name = person_names.get(u, G.nodes.get(u, {}).get("name", u) if isinstance(G.nodes.get(u), dict) else u)
+        v_name = person_names.get(v, G.nodes.get(v, {}).get("name", v) if isinstance(G.nodes.get(v), dict) else v)
         evidence_type = data.get("evidence_type", "CALL")
 
         try:

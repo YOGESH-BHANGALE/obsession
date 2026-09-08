@@ -463,9 +463,19 @@ def build_case_overview_context(
     Builds context for case-wide inquiries (summaries, patterns, network overview).
     """
     citations = []
-    case = db.query(Case).filter(Case.id == case_id).first()
-    if not case:
-        return "Case not found.", []
+    if case_id == "master":
+        class DummyCase:
+            title = "Global Master Criminal Syndicate Network"
+            id = "master"
+            status = "ACTIVE"
+            case_number = "MASTER-001"
+            case_type = "Syndicate Overview"
+            description = "Cross-case master graph containing all interconnected entities."
+        case = DummyCase()
+    else:
+        case = db.query(Case).filter(Case.id == case_id).first()
+        if not case:
+            return "Case not found.", []
 
     citations.append(f"Case File: {case.title} (ID: {case.id[:8]}..., Status: {case.status})")
 
@@ -479,9 +489,9 @@ def build_case_overview_context(
         if not persons:
             persons = db.query(Person).order_by(Person.suspicion_score.desc()).limit(25).all()
 
-    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all()
+    alerts = db.query(PatternAlert).filter(PatternAlert.case_id == case_id).all() if case_id != "master" else db.query(PatternAlert).all()
     G = store.get_networkx_graph(case_id)
-    edge_count = G.number_of_edges() if G else db.query(Edge).filter(Edge.case_id == case_id).count()
+    edge_count = G.number_of_edges() if G else (db.query(Edge).count() if case_id == "master" else db.query(Edge).filter(Edge.case_id == case_id).count())
 
     lines = [
         f"### Case Overview: {case.title}",

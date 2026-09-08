@@ -125,7 +125,6 @@ export const forecastAPI = {
   run: (caseId) => api.post(`/api/cases/${caseId}/forecast`),
 };
 
-// ═══════════════ AI Investigator Assistant (NVIDIA Nemotron) ═══════════════
 export const investigatorAPI = {
   ask: (caseId, question, selectedPersonId = null) =>
     api.post('/api/investigator/ask', {
@@ -133,6 +132,21 @@ export const investigatorAPI = {
       question,
       selected_person_id: selectedPersonId,
     }),
+  askStream: (caseId, question, selectedPersonId = null) => {
+    const token = localStorage.getItem('token');
+    return fetch(`${api.defaults.baseURL || ''}/api/investigator/ask/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({
+        case_id: caseId,
+        question,
+        selected_person_id: selectedPersonId,
+      })
+    });
+  },
   getSuggestions: (caseId) => api.get(`/api/investigator/suggestions/${caseId}`),
 };
 

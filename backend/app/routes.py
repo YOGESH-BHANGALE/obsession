@@ -1106,8 +1106,8 @@ def _ensure_case_graph(case_id: str, db: Session, store):
     is_master = case_id in ("all", "master", "syndicate")
 
     if is_master:
-        # For the Master Syndicate Network, select top interconnected persons across the 1,000-person database
-        top_persons = db.query(Person).order_by(Person.suspicion_score.desc()).limit(100).all()
+        # For the Master Syndicate Network, select all interconnected persons across the database without artificial limits
+        top_persons = db.query(Person).order_by(Person.suspicion_score.desc()).all()
         for p in top_persons:
             involved_pids.add(p.id)
     else:
@@ -2156,6 +2156,53 @@ def run_forecast(case_id: str, current_user: User = Depends(get_current_user), d
 # ═══════════════════════════════════════════════════════════════
 # AI Investigator Assistant Routes (NVIDIA Nemotron)
 # ═══════════════════════════════════════════════════════════════
+
+from fastapi.responses import StreamingResponse
+
+@router.post("/api/investigator/ask/stream")
+def ask_ai_investigator_stream(
+    req: InvestigatorAskRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Streaming version of the NVIDIA Nemotron AI Investigator Assistant.
+    """
+    from app.services.evidence_builder import build_investigator_context
+    from app.services.nemotron_service import ask_investigator_stream
+
+    if req.case_id != "master":
+        case = db.query(Case).filter(Case.id == req.case_id).first()
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        case_title = case.title
+    else:
+        case_title = "Global Master Criminal Syndicate Network"
+
+    evidence_context, citations = build_investigator_context(
+        db=db,
+        case_id=req.case_id,
+        question=req.question,
+        selected_person_id=req.selected_person_id
+    )
+
+    try:
+        db.add(AuditLog(
+            case_id=req.case_id,
+            user_id=current_user.id,
+            action="ai_investigator_query_stream",
+            target_type="investigation",
+            target_id=req.selected_person_id or req.case_id,
+            details=f"Question: {req.question[:200]}"
+        ))
+        db.commit()
+    except Exception:
+        pass
+
+    return StreamingResponse(
+        ask_investigator_stream(req.question, evidence_context, citations, case_title),
+        media_type="text/event-stream"
+    )
 
 @router.post("/api/investigator/ask", response_model=InvestigatorAskResponse)
 def ask_ai_investigator(

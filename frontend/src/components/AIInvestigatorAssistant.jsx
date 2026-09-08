@@ -95,19 +95,71 @@ I provide objective, evidence-grounded intelligence directly from case files, ca
     setLoading(true);
 
     try {
-      const res = await investigatorAPI.ask(caseId, q, selectedPersonId || null);
-      const data = res.data;
+      const response = await investigatorAPI.askStream(caseId, q, selectedPersonId || null);
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
 
-      const assistantMsg = {
-        id: `assistant-${Date.now()}`,
-        sender: 'assistant',
-        text: data.answer || 'No response generated.',
-        citations: data.evidence_used || [],
-        model: data.model || 'nvidia/nemotron-3.5-lightning-30b-a3b',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      
+      const assistantMsgId = `assistant-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantMsgId,
+          sender: 'assistant',
+          text: '',
+          citations: [],
+          model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        }
+      ]);
 
-      setMessages((prev) => [...prev, assistantMsg]);
+      let done = false;
+      let accumulatedText = '';
+      
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const dataStr = line.slice(6);
+                const parsed = JSON.parse(dataStr);
+                
+                if (parsed.type === 'chunk') {
+                  accumulatedText += parsed.text;
+                  setMessages((prev) => 
+                    prev.map((msg) => 
+                      msg.id === assistantMsgId 
+                        ? { ...msg, text: accumulatedText }
+                        : msg
+                    )
+                  );
+                } else if (parsed.type === 'error') {
+                  throw new Error(parsed.text);
+                } else if (parsed.type === 'done') {
+                  setMessages((prev) => 
+                    prev.map((msg) => 
+                      msg.id === assistantMsgId 
+                        ? { ...msg, citations: parsed.citations || [], model: parsed.model || msg.model }
+                        : msg
+                    )
+                  );
+                }
+              } catch (e) {
+                // Ignore parse errors on incomplete chunks if any
+              }
+            }
+          }
+        }
+      }
+      
     } catch (err) {
       console.error('AI assistant error:', err);
       const errMsg = err.response?.data?.detail || err.message || 'Failed to communicate with AI Assistant.';
