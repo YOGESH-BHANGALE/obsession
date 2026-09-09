@@ -233,13 +233,13 @@ export default function HierarchyTree({ caseId, onSelectPerson }) {
         {/* LEVEL 1: Core Leadership */}
         {level1.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', position: 'relative' }}>
-            {/* Absolute side labels */}
-            <div style={{ position: 'absolute', left: 0, top: '10px', width: '120px' }}>
-              <div style={{ fontWeight: 800, fontSize: '16px', color: '#1e293b' }}>Level 1</div>
-              <div style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.2 }}>Core Leadership<br/>({level1.length} members)</div>
-            </div>
-
             <div style={{ display: 'flex', position: 'relative', justifyContent: 'center', width: '100%', maxWidth: '1000px' }}>
+              {/* Absolute side labels */}
+              <div style={{ position: 'absolute', left: '-140px', top: '20px', width: '120px' }}>
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#1e293b' }}>Level 1</div>
+                <div style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.2 }}>Core Leadership<br/>({level1.length} members)</div>
+              </div>
+
               {/* Horizontal overarching connector */}
               <div style={{ position: 'absolute', top: 0, left: '16.66%', right: '16.66%', height: '2px', background: '#94a3b8' }} />
               
@@ -253,11 +253,11 @@ export default function HierarchyTree({ caseId, onSelectPerson }) {
                     
                     {/* LEVEL 2: Key Associates */}
                     {subAssociates.length > 0 && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '30px' }}>
-                        <div style={{ width: '2px', height: '30px', background: '#94a3b8', position: 'absolute', top: '100%', marginTop: '-30px' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '30px', position: 'relative' }}>
+                        <div style={{ width: '2px', height: '30px', background: '#94a3b8', position: 'absolute', top: '-30px' }} />
                         
                         {i === 0 && (
-                          <div style={{ position: 'absolute', left: '-120px', top: '20px', width: '120px' }}>
+                          <div style={{ position: 'absolute', left: '-140px', top: '0', width: '120px' }}>
                             <div style={{ fontWeight: 800, fontSize: '16px', color: '#1e293b' }}>Level 2</div>
                             <div style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.2 }}>Key Associates<br/>({level2.length} members)</div>
                           </div>
@@ -279,11 +279,11 @@ export default function HierarchyTree({ caseId, onSelectPerson }) {
                                 
                                 {/* LEVEL 3: Operational */}
                                 {subOps.length > 0 && (
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '20px' }}>
-                                    <div style={{ width: '2px', height: '20px', background: '#cbd5e1', position: 'absolute', top: '100%', marginTop: '-20px' }} />
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '20px', position: 'relative' }}>
+                                    <div style={{ width: '2px', height: '20px', background: '#cbd5e1', position: 'absolute', top: '-20px' }} />
                                     
                                     {i === 0 && j === 0 && (
-                                      <div style={{ position: 'absolute', left: '-240px', top: '15px', width: '120px' }}>
+                                      <div style={{ position: 'absolute', left: '-140px', top: '0', width: '120px' }}>
                                         <div style={{ fontWeight: 800, fontSize: '16px', color: '#1e293b' }}>Level 3</div>
                                         <div style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.2 }}>Operational<br/>({level3.length} members)</div>
                                       </div>
