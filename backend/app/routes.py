@@ -1659,7 +1659,10 @@ def get_past_timeline(case_id: str, current_user: User = Depends(get_current_use
     seen_keys = set()
 
     # 1. Registered FIR Records
-    firs = db.query(FIRRecord).filter(FIRRecord.case_id == case_id).all()
+    firs = db.query(FIRRecord).filter(
+        (FIRRecord.case_id == case_id) |
+        (FIRRecord.person_id.in_(list(case_pids)) if case_pids else False)
+    ).all()
     for fir in firs:
         ts = fir.date.isoformat() if fir.date else ""
         if not ts:
@@ -1691,9 +1694,23 @@ def get_past_timeline(case_id: str, current_user: User = Depends(get_current_use
             })
 
     # 2. Existing Event records
-    events = db.query(Event).filter(
-        Event.case_id == case_id, Event.is_predicted == False
-    ).order_by(Event.timestamp).all()
+    all_events = db.query(Event).filter(Event.is_predicted == False).all()
+    events = []
+    for e in all_events:
+        if e.case_id == case_id:
+            events.append(e)
+            continue
+        
+        entities = e.linked_entity_ids
+        if isinstance(entities, str):
+            try:
+                entities = json.loads(entities)
+            except Exception:
+                entities = []
+        if isinstance(entities, list) and set(entities).intersection(case_pids):
+            events.append(e)
+
+    events.sort(key=lambda x: x.timestamp.isoformat() if x.timestamp else "")
     for e in events:
         ts = e.timestamp.isoformat() if e.timestamp else ""
         if not ts:
@@ -1738,10 +1755,23 @@ def get_past_timeline(case_id: str, current_user: User = Depends(get_current_use
         })
 
     # 3. Physical Surveillance Rendezvous Sightings
-    survs = db.query(SurveillanceRecord).filter(
-        (SurveillanceRecord.case_id == case_id) |
-        (SurveillanceRecord.person_id.in_(list(case_pids)) if case_pids else False)
-    ).limit(30).all()
+    all_survs = db.query(SurveillanceRecord).all()
+    survs = []
+    for s in all_survs:
+        if s.case_id == case_id or s.person_id in case_pids:
+            survs.append(s)
+            continue
+            
+        obs = s.observed_person_ids
+        if isinstance(obs, str):
+            try:
+                obs = json.loads(obs)
+            except Exception:
+                obs = []
+        if isinstance(obs, list) and set(obs).intersection(case_pids):
+            survs.append(s)
+            
+    survs = survs[:30]
     for s in survs:
         ts = s.timestamp.isoformat() if s.timestamp else ""
         if not ts:
